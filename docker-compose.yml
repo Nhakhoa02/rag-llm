@@ -1,0 +1,266 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: docker/api-gateway.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      - cassandra
+      - redis
+      - elasticsearch
+      - kafka
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+    networks:
+      - rag-network
+
+  # Data Ingestion Service
+  ingestion-service:
+    build:
+      context: .
+      dockerfile: docker/ingestion.Dockerfile
+    environment:
+      - ENVIRONMENT=development
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - CASSANDRA_HOSTS=cassandra
+      - REDIS_HOST=redis
+    depends_on:
+      - kafka
+      - cassandra
+      - redis
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    networks:
+      - rag-network
+
+  # Indexing Service
+  indexing-service:
+    build:
+      context: .
+      dockerfile: docker/indexing.Dockerfile
+    environment:
+      - ENVIRONMENT=development
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
+      - CHROMADB_HOST=chromadb
+      - QDRANT_HOST=qdrant
+    depends_on:
+      - elasticsearch
+      - chromadb
+      - qdrant
+    volumes:
+      - ./config:/app/config
+    networks:
+      - rag-network
+
+  # Query Service
+  query-service:
+    build:
+      context: .
+      dockerfile: docker/query.Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - ENVIRONMENT=development
+      - ELASTICSEARCH_HOSTS=elasticsearch:9200
+      - CHROMADB_HOST=chromadb
+      - QDRANT_HOST=qdrant
+    depends_on:
+      - elasticsearch
+      - chromadb
+      - qdrant
+    networks:
+      - rag-network
+
+  # Storage Services
+  cassandra:
+    image: cassandra:4.1
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=rag-cluster
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      - ./config/cassandra:/etc/cassandra
+    networks:
+      - rag-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - rag-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - rag-network
+
+  # Vector Databases
+  chromadb:
+    image: chromadb/chroma:latest
+    ports:
+      - "8002:8000"
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+    volumes:
+      - chromadb_data:/chroma/chroma
+    networks:
+      - rag-network
+
+  # Vector Database - Qdrant
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    networks:
+      - rag-network
+
+  # Message Queue
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    networks:
+      - rag-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - rag-network
+
+  # Object Storage
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - rag-network
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - rag-network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana:/etc/grafana/provisioning
+    networks:
+      - rag-network
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - rag-network
+
+  # Consistency Management
+  etcd:
+    image: quay.io/coreos/etcd:latest
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    command: etcd --advertise-client-urls http://0.0.0.0:2379 --listen-client-urls http://0.0.0.0:2379
+    networks:
+      - rag-network
+
+  # Load Balancer
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/ssl:/etc/nginx/ssl
+    depends_on:
+      - api-gateway
+      - query-service
+    networks:
+      - rag-network
+
+volumes:
+  cassandra_data:
+  redis_data:
+  elasticsearch_data:
+  chromadb_data:
+  qdrant_data:
+  minio_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  rag-network:
+    driver: bridge 
