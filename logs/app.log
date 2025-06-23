@@ -552,3 +552,14 @@ HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search
 HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
 {"document_id": "0c70f5ee-24a8-4380-9850-89ffcaba7da6", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmphtq3a02y.pdf", "event": "Document processed successfully", "logger": "DocumentProcessor", "level": "info", "timestamp": "2025-06-23T22:53:36.154511Z"}
 {"document_id": "0c3a9f0e-d7a1-4f56-9c1f-9386df4cc06a", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp6jsiw9pp.pdf", "event": "Document processed successfully", "logger": "DocumentProcessor", "level": "info", "timestamp": "2025-06-23T22:54:15.054150Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T22:57:42.251802Z"}
