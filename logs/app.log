@@ -1696,3 +1696,4 @@ Use pytorch device: cpu
 {"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:20:58.278910Z"}
 HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
 HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:23:34.896890Z"}
