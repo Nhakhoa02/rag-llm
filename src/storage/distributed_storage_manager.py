@@ -51,6 +51,15 @@ class DistributedStorageManager:
         
         logger.info(f"Initialized distributed storage with {len(nodes)} nodes")
     
+    async def index_exists(self, index_name: str) -> bool:
+        """Check if an index exists in the distributed system."""
+        try:
+            collections = await self.distributed_store.list_collections()
+            return any(col["name"] == index_name for col in collections)
+        except Exception as e:
+            logger.error(f"Error checking if index {index_name} exists: {e}")
+            return False
+    
     async def create_index(self, index_name: str, vector_size: Optional[int] = None) -> bool:
         """Create a new index (collection) in the distributed system."""
         try:

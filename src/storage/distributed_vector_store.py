@@ -20,6 +20,7 @@ import aiohttp
 import numpy as np
 from collections import defaultdict
 import random
+import statistics
 
 from ..utils.logging import get_logger
 from ..utils.metrics import metrics_collector
@@ -47,7 +48,7 @@ class VectorNode:
     last_heartbeat: float = 0.0
     load: float = 0.0  # Current load (0.0 to 1.0)
     vector_count: int = 0
-    collections: Set[str] = None
+    collections: Optional[Set[str]] = None
     
     def __post_init__(self):
         if self.collections is None:
@@ -86,24 +87,22 @@ class VectorShard:
 
 class DistributedVectorStore:
     """
-    Distributed vector storage system with fault tolerance and scalability.
+    Distributed vector storage system with automatic sharding and replication.
     """
     
     def __init__(self, 
-                 nodes: List[VectorNode] = None,
+                 nodes: Optional[List[VectorNode]] = None,
                  replication_factor: int = 2,
                  consistency_level: ConsistencyLevel = ConsistencyLevel.QUORUM,
                  shard_count: int = 8):
-        
         self.nodes: Dict[str, VectorNode] = {}
         self.shards: Dict[str, VectorShard] = {}
-        self.collections: Dict[str, List[str]] = defaultdict(list)  # collection -> shard_ids
-        
+        self.collections: Dict[str, List[str]] = defaultdict(list)
         self.replication_factor = replication_factor
         self.consistency_level = consistency_level
         self.shard_count = shard_count
         
-        # Initialize nodes
+        # Add initial nodes
         if nodes:
             for node in nodes:
                 self.add_node(node)
@@ -266,9 +265,18 @@ class DistributedVectorStore:
         logger.warning("Timeout waiting for healthy nodes")
         return False
 
+    def collection_exists(self, collection_name: str) -> bool:
+        """Check if a collection exists in the distributed system."""
+        return collection_name in self.collections
+    
     async def create_collection(self, collection_name: str, vector_size: int = 384) -> bool:
         """Create a new collection in the distributed system."""
         try:
+            # Check if collection already exists
+            if collection_name in self.collections:
+                logger.info(f"Collection {collection_name} already exists, skipping creation")
+                return True
+            
             # Wait for healthy nodes first
             if not await self.wait_for_healthy_nodes():
                 logger.warning("No healthy nodes available, proceeding with all nodes")
@@ -539,4 +547,45 @@ class DistributedVectorStore:
             "consistency_level": self.consistency_level.value,
             "nodes": [node.to_dict() for node in self.nodes.values()],
             "shards": [asdict(shard) for shard in self.shards.values()]
-        } 
+        }
+    
+    def get_performance_metrics(self) -> Dict[str, Any]:
+        """Get performance metrics for the distributed system."""
+        try:
+            # Calculate average load across healthy nodes
+            healthy_nodes = [n for n in self.nodes.values() if n.status == NodeStatus.HEALTHY]
+            avg_load = statistics.mean([n.load for n in healthy_nodes]) if healthy_nodes else 0.0
+            
+            # Calculate average vectors per node
+            total_vectors = sum(shard.vector_count for shard in self.shards.values())
+            avg_vectors_per_node = total_vectors / max(len(healthy_nodes), 1)
+            
+            # Mock performance metrics (in a real system, these would be tracked over time)
+            # For now, we'll use reasonable defaults based on system state
+            avg_search_latency = 50.0 + (avg_load * 200.0)  # 50-250ms based on load
+            query_throughput = max(10.0, 100.0 - (avg_load * 80.0))  # 10-100 QPS based on load
+            error_rate = 0.001 + (avg_load * 0.01)  # 0.1%-1.1% based on load
+            
+            return {
+                "avg_search_latency": avg_search_latency,
+                "query_throughput": query_throughput,
+                "error_rate": error_rate,
+                "avg_load": avg_load,
+                "avg_vectors_per_node": avg_vectors_per_node,
+                "healthy_node_ratio": len(healthy_nodes) / max(len(self.nodes), 1),
+                "total_vectors": total_vectors,
+                "total_shards": len(self.shards)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error getting performance metrics: {e}")
+            return {
+                "avg_search_latency": 0.0,
+                "query_throughput": 0.0,
+                "error_rate": 0.0,
+                "avg_load": 0.0,
+                "avg_vectors_per_node": 0.0,
+                "healthy_node_ratio": 0.0,
+                "total_vectors": 0,
+                "total_shards": 0
+            } 

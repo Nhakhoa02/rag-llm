@@ -12,7 +12,6 @@ from pydantic import BaseModel
 import requests
 import json
 from typing import cast
-import time
 
 from ..config import settings
 from ..utils.logging import get_logger
@@ -22,7 +21,7 @@ from ..ingestion.chunker import TextChunker
 from ..ai.gemini_client import GeminiClient, extract_gemini_text
 from ..storage.distributed_storage_manager import create_distributed_storage_manager
 from ..storage.distributed_vector_store import VectorNode
-from ..models.base import BaseDocument, DataType
+from ..models.base import BaseDocument
 from ..models.document import Document as DocModel
 from ..storage.auto_scaler import create_auto_scaler, ScalingThresholds
 
@@ -50,60 +49,65 @@ storage_manager = create_distributed_storage_manager(
 # Initialize auto-scaler
 auto_scaler = create_auto_scaler(storage_manager)
 
-async def determine_collections(document: BaseDocument, ai_metadata: Dict[str, Any], existing_collections: Optional[List[str]] = None) -> List[str]:
+async def determine_collections(document: BaseDocument, ai_metadata: Dict[str, Any]) -> List[str]:
     """
     Use AI to determine which collections this document should be stored in.
-    The AI is encouraged to always create new, specific, and combination collections for new topics, even if a broad collection exists.
+    Creates specialized collections based on content analysis.
     """
     try:
-        # Get existing collections if not provided
-        if existing_collections is None:
-            collections = await storage_manager.list_indexes()
-            existing_collections = [col["name"] for col in collections]
-        
         # Base collections based on document type
         base_collections = [f"index_{document.type.value}"]
         
-        # Reduce content preview to avoid overwhelming the model
+        # Analyze content for specialized collections
         content_preview = document.content[:1000] if document.content else "No content available"
+        content_analysis_prompt = f"""
+        Analyze this content and determine which specialized collections it should be stored in.
         
-        # Extract key metadata for better analysis
-        file_metadata = document.metadata or {}
-        file_name = file_metadata.get('filename', 'unknown')
-        file_type = file_metadata.get('mime_type', 'unknown')
-        file_size = file_metadata.get('file_size', 0)
+        Content Type: {document.type.value}
+        Content Preview: {content_preview}...
         
-        # Minimal prompt for debugging Gemini response
-        minimal_prompt = f"""
-        Given the following document content, return a JSON list of 1-3 relevant collection names (as strings) that describe the main topics. Example: ["index_ai", "index_machine_learning"]
-        Document Content: {content_preview}
+        Available metadata: {ai_metadata}
+        
+        Consider creating specialized collections for:
+        - Content topics (e.g., index_technology, index_finance, index_healthcare)
+        - Content formats (e.g., index_reports, index_manuals, index_research)
+        - Content domains (e.g., index_business, index_academic, index_creative)
+        - Content languages (e.g., index_english, index_spanish, index_french)
+        - Content sentiment (e.g., index_positive, index_negative, index_neutral)
+        
+        Return a JSON list of collection names (without 'index_' prefix):
+        ["technology", "reports", "business", "english"]
+        
+        Guidelines:
+        - Create 2-4 specialized collections
+        - Use descriptive, lowercase names
+        - Consider the main topics and characteristics
+        - Don't include the base collection (already handled)
         """
+        
+        response = await gemini_client.generate_text(content_analysis_prompt, temperature=0.3)
+        response_text = extract_gemini_text(response)
+        
+        # Parse the response
         try:
-            response = await gemini_client.generate_text(minimal_prompt, temperature=0.5)
-            logger.info(f"Full Gemini API response object: {response}")
-            response_text = extract_gemini_text(response)
-            logger.info(f"Raw Gemini response for collection determination (minimal prompt): {response_text}")
-        except Exception as gemini_exc:
-            logger.error(f"Gemini API call failed (minimal prompt): {gemini_exc}")
-            return base_collections
-        # Try to parse a simple list from the response
-        try:
-            import ast
-            # Remove Markdown code block formatting if present
-            cleaned = response_text.strip()
-            if cleaned.startswith('```'):
-                cleaned = cleaned.split('\n', 1)[-1]  # Remove the first line (``` or ```json)
-                if cleaned.endswith('```'):
-                    cleaned = cleaned.rsplit('```', 1)[0]
-            cleaned = cleaned.strip()
-            collections = ast.literal_eval(cleaned)
-            if isinstance(collections, list) and all(isinstance(x, str) for x in collections):
-                # Always append the base collection if not present
-                if base_collections[0] not in collections:
-                    collections.append(base_collections[0])
-                return collections
-        except Exception as parse_exc:
-            logger.warning(f"Failed to parse minimal Gemini response: {parse_exc}")
+            if "[" in response_text and "]" in response_text:
+                start = response_text.find("[")
+                end = response_text.rfind("]") + 1
+                json_str = response_text[start:end]
+                specialized_collections = json.loads(json_str)
+                
+                # Add 'index_' prefix to specialized collections
+                specialized_collections = [f"index_{col}" for col in specialized_collections if isinstance(col, str)]
+                
+                # Combine base and specialized collections
+                all_collections = base_collections + specialized_collections
+                logger.info(f"AI determined collections: {all_collections}")
+                return all_collections
+                
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"Failed to parse collection analysis: {e}")
+        
+        # Fallback to base collection
         return base_collections
         
     except Exception as e:
@@ -271,12 +275,8 @@ async def upload_file(
             embeddings = await gemini_client.generate_embeddings(document.content)
             
             if embeddings:
-                # Get existing collections for AI analysis
-                existing_collections = await storage_manager.list_indexes()
-                existing_collection_names = [col["name"] for col in existing_collections]
-                
-                # Determine collection names using AI analysis (now considers existing collections)
-                collection_names = await determine_collections(document, ai_metadata, existing_collection_names)
+                # Determine collection names using AI analysis
+                collection_names = await determine_collections(document, ai_metadata)
                 logger.info(f"AI determined collections: {collection_names}")
                 
                 # Store in multiple collections
@@ -285,20 +285,14 @@ async def upload_file(
                 
                 for collection_name in collection_names:
                     try:
-                        # Check if collection exists before creating
-                        collection_exists = await storage_manager.index_exists(collection_name)
+                        # Create collection if it doesn't exist
+                        await storage_manager.create_index(collection_name, vector_size)
                         
-                        if not collection_exists:
-                            # Create collection only if it doesn't exist
-                            await storage_manager.create_index(collection_name, vector_size)
-                            logger.info(f"Created new collection: {collection_name}")
-                        else:
-                            logger.info(f"Using existing collection: {collection_name}")
-                        
-                        # Store documents in this collection (append mode)
+                        # Store documents in this collection
                         success = await storage_manager.upsert_documents(
                             index_name=collection_name,
-                            documents=cast(List[DocModel], chunked_docs)  # Cast to proper type
+                            documents=cast(List[DocModel], chunked_docs),  # Cast to proper type
+                            embeddings=embeddings
                         )
                         
                         if success:
@@ -315,8 +309,9 @@ async def upload_file(
                     # Fallback to default collection
                     default_collection = f"index_{document.type.value}"
                     await storage_manager.create_index(default_collection, vector_size)
-                    # Cast to proper type
-                    await storage_manager.upsert_documents(default_collection, cast(List[DocModel], chunked_docs))
+                    # Ensure proper type conversion
+                    documents_to_store = [DocModel(**doc.dict()) if hasattr(doc, 'dict') else doc for doc in chunked_docs]
+                    await storage_manager.upsert_documents(default_collection, documents_to_store, embeddings)
                     stored_collections = [default_collection]
                     logger.info(f"Fallback to default collection: {default_collection}")
                 
@@ -1088,21 +1083,20 @@ async def manual_scale_up():
     Useful for testing or immediate scaling needs.
     """
     try:
-        # Get current cluster status
-        cluster_status = await storage_manager.get_cluster_status()
-        current_nodes = cluster_status.get("total_nodes", 0)
+        # Get current metrics
+        metrics = await auto_scaler._collect_metrics()
         
         # Check if we can scale up
-        if current_nodes >= auto_scaler.thresholds.max_nodes:
+        if metrics.node_count >= auto_scaler.thresholds.max_nodes:
             raise HTTPException(status_code=400, detail="Maximum number of nodes reached")
         
-        # Trigger scale up using the existing method
-        await auto_scaler._scale_up("Manual scale-up triggered", current_nodes)
+        # Trigger scale up
+        await auto_scaler._scale_up("Manual scale-up triggered", metrics)
         
         return {
             "status": "scaled_up",
-            "message": f"Manually scaled up to {current_nodes + 1} nodes",
-            "new_node_count": current_nodes + 1
+            "message": f"Manually scaled up to {metrics.node_count + 1} nodes",
+            "new_node_count": metrics.node_count + 1
         }
     except Exception as e:
         logger.error("Failed to manually scale up", error=str(e))
@@ -1115,181 +1109,24 @@ async def manual_scale_down():
     Useful for testing or immediate scaling needs.
     """
     try:
-        # Get current cluster status
-        cluster_status = await storage_manager.get_cluster_status()
-        current_nodes = cluster_status.get("total_nodes", 0)
+        # Get current metrics
+        metrics = await auto_scaler._collect_metrics()
         
         # Check if we can scale down
-        if current_nodes <= auto_scaler.thresholds.min_nodes:
+        if metrics.node_count <= auto_scaler.thresholds.min_nodes:
             raise HTTPException(status_code=400, detail="Minimum number of nodes reached")
         
-        # Trigger scale down using the existing method
-        await auto_scaler._scale_down("Manual scale-down triggered", current_nodes)
+        # Trigger scale down
+        await auto_scaler._scale_down("Manual scale-down triggered", metrics)
         
         return {
             "status": "scaled_down",
-            "message": f"Manually scaled down to {current_nodes - 1} nodes",
-            "new_node_count": current_nodes - 1
+            "message": f"Manually scaled down to {metrics.node_count - 1} nodes",
+            "new_node_count": metrics.node_count - 1
         }
     except Exception as e:
         logger.error("Failed to manually scale down", error=str(e))
         raise HTTPException(status_code=500, detail=f"Failed to scale down: {str(e)}")
-
-@app.get("/debug/collections")
-async def debug_collections():
-    """
-    Debug endpoint to show detailed collection information.
-    Helps diagnose indexing and collection creation issues.
-    """
-    try:
-        collections = await storage_manager.list_indexes()
-        
-        # Get cluster status for additional info
-        cluster_status = await storage_manager.get_cluster_status()
-        
-        debug_info = {
-            "total_collections": len(collections),
-            "collections": [],
-            "cluster_status": {
-                "total_nodes": cluster_status.get("total_nodes", 0),
-                "healthy_nodes": cluster_status.get("healthy_nodes", 0),
-                "total_vectors": cluster_status.get("total_vectors", 0)
-            }
-        }
-        
-        for collection in collections:
-            # Get detailed stats for each collection
-            stats = await storage_manager.get_index_stats(collection["name"])
-            debug_info["collections"].append({
-                "name": collection["name"],
-                "vectors_count": collection["vectors_count"],
-                "shard_count": collection["shard_count"],
-                "stats": stats or {}
-            })
-        
-        return debug_info
-        
-    except Exception as e:
-        logger.error(f"Debug collections failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Debug failed: {str(e)}")
-
-@app.get("/debug/upload_test")
-async def debug_upload_test():
-    """
-    Debug endpoint to test upload functionality with AI-driven collection decisions.
-    """
-    try:
-        # Create a test document
-        test_document = BaseDocument(
-            id=f"test_{int(time.time())}",
-            content="This is a test document for debugging the upload system. It contains technical content about distributed systems and vector databases.",
-            metadata={"test": True, "timestamp": time.time()},
-            type=DataType.DOCUMENT
-        )
-        
-        # Get existing collections
-        existing_collections = await storage_manager.list_indexes()
-        existing_collection_names = [col["name"] for col in existing_collections]
-        
-        # Test collection determination with existing collections
-        ai_metadata = {"test": True}
-        collections = await determine_collections(test_document, ai_metadata, existing_collection_names)
-        
-        return {
-            "test_document": {
-                "id": test_document.id,
-                "content_preview": (test_document.content or "")[:100] + "..." if test_document.content else "No content",
-                "type": test_document.type.value
-            },
-            "existing_collections": existing_collection_names,
-            "determined_collections": collections,
-            "total_collections": len(collections),
-            "new_collections": [col for col in collections if col not in existing_collection_names],
-            "reused_collections": [col for col in collections if col in existing_collection_names]
-        }
-        
-    except Exception as e:
-        logger.error(f"Debug upload test failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Debug test failed: {str(e)}")
-
-@app.get("/debug/ai_collection_analysis")
-async def debug_ai_collection_analysis():
-    """
-    Debug endpoint to test AI collection analysis with detailed reasoning.
-    """
-    try:
-        # Create test documents with different content
-        test_documents = [
-            {
-                "name": "machine_learning_research.pdf",
-                "content": "This research paper presents novel deep learning architectures for natural language processing. The study introduces a new transformer model that achieves state-of-the-art performance on benchmark datasets including GLUE and SuperGLUE. The model incorporates attention mechanisms and demonstrates improved efficiency in processing long sequences.",
-                "type": DataType.DOCUMENT,
-                "metadata": {"filename": "machine_learning_research.pdf", "mime_type": "application/pdf", "file_size": 2048576}
-            },
-            {
-                "name": "cybersecurity_guide.pdf", 
-                "content": "Comprehensive cybersecurity guide covering network security protocols, encryption standards, threat detection systems, and incident response procedures. Includes detailed analysis of common attack vectors and best practices for enterprise security implementation.",
-                "type": DataType.DOCUMENT,
-                "metadata": {"filename": "cybersecurity_guide.pdf", "mime_type": "application/pdf", "file_size": 1536000}
-            },
-            {
-                "name": "financial_report.pdf",
-                "content": "Q3 2024 financial report showing revenue growth of 23% year-over-year, with detailed analysis of market trends, customer acquisition costs, and profitability metrics. The report includes projections for Q4 and strategic recommendations for market expansion.",
-                "type": DataType.DOCUMENT,
-                "metadata": {"filename": "financial_report.pdf", "mime_type": "application/pdf", "file_size": 1024000}
-            }
-        ]
-        
-        # Get existing collections
-        existing_collections = await storage_manager.list_indexes()
-        existing_collection_names = [col["name"] for col in existing_collections]
-        
-        results = []
-        
-        for i, doc_data in enumerate(test_documents, 1):
-            # Create document object
-            document = BaseDocument(
-                id=f"test_doc_{i}",
-                content=doc_data['content'],
-                metadata=doc_data['metadata'],
-                type=doc_data['type']
-            )
-            
-            # Test collection determination
-            ai_metadata = {"source": "debug_test", "category": "demo"}
-            collections = await determine_collections(document, ai_metadata, existing_collection_names)
-            
-            # Analyze results
-            new_collections = [col for col in collections if col not in existing_collection_names]
-            reused_collections = [col for col in collections if col in existing_collection_names]
-            
-            results.append({
-                "document": {
-                    "name": doc_data['name'],
-                    "content_preview": doc_data['content'][:100] + "...",
-                    "type": doc_data['type'].value,
-                    "metadata": doc_data['metadata']
-                },
-                "ai_decision": {
-                    "all_collections": collections,
-                    "reused_existing": reused_collections,
-                    "created_new": new_collections,
-                    "total_collections": len(collections)
-                }
-            })
-            
-            # Update existing collections for next iteration
-            existing_collection_names.extend(new_collections)
-        
-        return {
-            "test_results": results,
-            "final_collections": existing_collection_names,
-            "total_final_collections": len(existing_collection_names)
-        }
-        
-    except Exception as e:
-        logger.error(f"Debug AI collection analysis failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Debug analysis failed: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(

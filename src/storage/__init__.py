@@ -7,6 +7,7 @@ from .cassandra_client import CassandraClient
 from .elasticsearch_client import ElasticsearchClient
 from .minio_client import MinioClient
 from .storage_manager import StorageManager
+from .auto_scaler import create_auto_scaler, ScalingThresholds, AutoScaler
 
 __all__ = [
     "QdrantClient",
@@ -14,4 +15,7 @@ __all__ = [
     "ElasticsearchClient",
     "MinioClient",
     "StorageManager",
+    "create_auto_scaler",
+    "ScalingThresholds",
+    "AutoScaler",
 ] 

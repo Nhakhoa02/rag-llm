@@ -173,7 +173,9 @@ class VectorNodeServer:
                 upserted_count = 0
                 
                 for i, (vector, document) in enumerate(zip(vectors_data, documents_data)):
-                    vector_id = f"{shard_id}_{document['id']}_{i}"
+                    # Create unique vector ID using timestamp and random component
+                    unique_id = str(uuid.uuid4())
+                    vector_id = f"{shard_id}_{document['id']}_{unique_id}_{i}"
                     
                     vector_data = VectorData(
                         id=vector_id,
@@ -187,10 +189,16 @@ class VectorNodeServer:
                     self.shards[shard_id].append(vector_id)
                     upserted_count += 1
                 
-                # Update collection counts
-                for collection_name in self.collections:
-                    count = sum(1 for v in self.vectors.values() if v.collection_name == collection_name)
-                    self.collections[collection_name].vector_count = count
+                # Update collection counts properly
+                collection_counts = {}
+                for vector_data in self.vectors.values():
+                    coll_name = vector_data.collection_name
+                    collection_counts[coll_name] = collection_counts.get(coll_name, 0) + 1
+                
+                # Update collection objects
+                for coll_name, count in collection_counts.items():
+                    if coll_name in self.collections:
+                        self.collections[coll_name].vector_count = count
                 
                 self.request_count += 1
                 self.last_request_time = time.time()
