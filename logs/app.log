@@ -3101,3 +3101,134 @@ Use pytorch device: cpu
 {"event": "Found 1 results in distributed index: software_architecture", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T11:36:19.069027Z"}
 {"event": "Found 8 results in distributed index: index_document", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T11:37:09.887784Z"}
 {"event": "Found 0 results in distributed index: index_tabular", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T11:37:09.927863Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T11:59:24.412206Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T12:04:51.500724Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Added node node1 at http://localhost:8001", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:55.587908Z"}
+{"event": "Added node node2 at http://localhost:8002", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:55.601921Z"}
+{"event": "Added node node3 at http://localhost:8003", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:55.612918Z"}
+{"event": "Initialized distributed storage with 3 nodes", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:04:55.624154Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:55.667860Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:55.682978Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:55.692979Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:04:55.705985Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:57.724748Z"}
+{"event": "Created collection index_document on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:57.747353Z"}
+{"event": "Created distributed index: index_document", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:04:57.764940Z"}
+{"event": "Created default collection: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:04:57.783384Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:57.787512Z"}
+{"event": "Created collection index_image on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:57.810170Z"}
+{"event": "Created distributed index: index_image", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:04:57.829464Z"}
+{"event": "Created default collection: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:04:57.843259Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:57.848259Z"}
+{"event": "Created collection index_tabular on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:04:57.868876Z"}
+{"event": "Created distributed index: index_tabular", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:04:57.884178Z"}
+{"event": "Created default collection: index_tabular", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:04:57.899799Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:05.313314Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T12:05:17.234734Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Added node node1 at http://localhost:8001", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:21.376920Z"}
+{"event": "Added node node2 at http://localhost:8002", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:21.390921Z"}
+{"event": "Added node node3 at http://localhost:8003", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:21.402929Z"}
+{"event": "Initialized distributed storage with 3 nodes", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:21.412899Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:21.452909Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:21.466827Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:21.477833Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:21.488784Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:23.517191Z"}
+{"event": "Created collection index_document on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:23.536012Z"}
+{"event": "Created distributed index: index_document", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:23.547012Z"}
+{"event": "Created default collection: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:23.559010Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:23.563011Z"}
+{"event": "Created collection index_image on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:23.576012Z"}
+{"event": "Created distributed index: index_image", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:23.588009Z"}
+{"event": "Created default collection: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:23.600009Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:23.601827Z"}
+{"event": "Created collection index_tabular on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:23.615600Z"}
+{"event": "Created distributed index: index_tabular", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:23.624815Z"}
+{"event": "Created default collection: index_tabular", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:23.636815Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:23.639815Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T12:05:35.435857Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Added node node1 at http://localhost:8001", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:38.954996Z"}
+{"event": "Added node node2 at http://localhost:8002", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:38.969506Z"}
+{"event": "Added node node3 at http://localhost:8003", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:38.980709Z"}
+{"event": "Initialized distributed storage with 3 nodes", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:38.990708Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:39.031889Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:39.044888Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:39.055753Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:39.066286Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:41.086377Z"}
+{"event": "Created collection index_document on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:41.110327Z"}
+{"event": "Created distributed index: index_document", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:41.122346Z"}
+{"event": "Created default collection: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:41.133399Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:41.136398Z"}
+{"event": "Created collection index_image on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:41.150812Z"}
+{"event": "Created distributed index: index_image", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:41.162815Z"}
+{"event": "Created default collection: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:41.172885Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:41.174885Z"}
+{"event": "Created collection index_tabular on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:05:41.187432Z"}
+{"event": "Created distributed index: index_tabular", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:05:41.199433Z"}
+{"event": "Created default collection: index_tabular", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:05:41.208433Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:06:51.914407Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T12:07:05.180673Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Added node node1 at http://localhost:8001", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:08.861305Z"}
+{"event": "Added node node2 at http://localhost:8002", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:08.875876Z"}
+{"event": "Added node node3 at http://localhost:8003", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:08.886760Z"}
+{"event": "Initialized distributed storage with 3 nodes", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:07:08.898279Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:08.937875Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:08.952029Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:08.964045Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:07:08.973493Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:10.993954Z"}
+{"event": "Created collection index_document on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:11.012985Z"}
+{"event": "Created distributed index: index_document", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:07:11.022887Z"}
+{"event": "Created default collection: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:07:11.034887Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:11.037890Z"}
+{"event": "Created collection index_image on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:11.050923Z"}
+{"event": "Created distributed index: index_image", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:07:11.061987Z"}
+{"event": "Created default collection: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:07:11.072176Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:11.076179Z"}
+{"event": "Created collection index_tabular on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:07:11.088181Z"}
+{"event": "Created distributed index: index_tabular", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:07:11.100699Z"}
+{"event": "Created default collection: index_tabular", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:07:11.113211Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:09:38.297177Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T12:09:50.930790Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Added node node1 at http://localhost:8001", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:09:55.200584Z"}
+{"event": "Added node node2 at http://localhost:8002", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:09:55.213227Z"}
+{"event": "Added node node3 at http://localhost:8003", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:09:55.223230Z"}
+{"event": "Initialized distributed storage with 3 nodes", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:09:55.233226Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:09:55.274229Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:09:55.287291Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:09:55.298287Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:09:55.309205Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T12:10:12.238028Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Added node node1 at http://localhost:8001", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:20.113900Z"}
+{"event": "Added node node2 at http://localhost:8002", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:20.145408Z"}
+{"event": "Added node node3 at http://localhost:8003", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:20.167841Z"}
+{"event": "Initialized distributed storage with 3 nodes", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:10:20.196729Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:20.299539Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:20.326485Z"}
+{"event": "Redistributing shards across nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:20.347289Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:10:20.376532Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:22.424213Z"}
+{"event": "Created collection index_document on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:22.483479Z"}
+{"event": "Created distributed index: index_document", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:10:22.525874Z"}
+{"event": "Created default collection: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:10:22.555274Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:22.562305Z"}
+{"event": "Created collection index_image on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:22.586906Z"}
+{"event": "Created distributed index: index_image", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:10:22.611420Z"}
+{"event": "Created default collection: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:10:22.628896Z"}
+{"event": "Found 3 healthy nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:22.631893Z"}
+{"event": "Created collection index_tabular on 3/3 nodes", "logger": "src.storage.distributed_vector_store", "level": "info", "timestamp": "2025-06-24T12:10:22.652522Z"}
+{"event": "Created distributed index: index_tabular", "logger": "src.storage.distributed_storage_manager", "level": "info", "timestamp": "2025-06-24T12:10:22.679626Z"}
+{"event": "Created default collection: index_tabular", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T12:10:22.699409Z"}

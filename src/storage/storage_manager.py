@@ -11,18 +11,11 @@ from ..models.document import Document
 from ..utils.logging import get_logger
 from .distributed_storage_manager import DistributedStorageManager, create_distributed_storage_manager
 from .distributed_vector_store import VectorNode
-from .cassandra_client import CassandraClient
-from .elasticsearch_client import ElasticsearchClient
-from .minio_client import MinioClient
-
 
 class StorageConfig(BaseModel):
     """Storage manager configuration."""
     
     enable_distributed_vector: bool = Field(default=True, description="Enable distributed vector storage")
-    enable_cassandra: bool = Field(default=False, description="Enable Cassandra storage")
-    enable_elasticsearch: bool = Field(default=False, description="Enable Elasticsearch storage")
-    enable_minio: bool = Field(default=False, description="Enable MinIO object storage")
     replication_factor: int = Field(default=2, description="Replication factor for distributed storage")
     consistency_level: str = Field(default="quorum", description="Consistency level for distributed storage")
     shard_count: int = Field(default=8, description="Number of shards for distributed storage")
@@ -58,11 +51,6 @@ class StorageManager:
         else:
             self.distributed_storage = None
         
-        # Initialize other storage clients
-        self.cassandra_client = CassandraClient() if self.config.enable_cassandra else None
-        self.elasticsearch_client = ElasticsearchClient() if self.config.enable_elasticsearch else None
-        self.minio_client = MinioClient() if self.config.enable_minio else None
-        
         self._initialized = False
     
     async def initialize(self) -> bool:
@@ -77,18 +65,6 @@ class StorageManager:
                 if not is_healthy:
                     self.logger.warning("Distributed vector storage is not healthy")
             
-            # Initialize Cassandra
-            if self.cassandra_client:
-                await self.cassandra_client.connect()
-            
-            # Initialize Elasticsearch
-            if self.elasticsearch_client:
-                await self.elasticsearch_client.connect()
-            
-            # Initialize MinIO
-            if self.minio_client:
-                await self.minio_client.connect()
-            
             self._initialized = True
             self.logger.info("Storage manager initialized successfully")
             return True
@@ -101,17 +77,6 @@ class StorageManager:
         """Shutdown all storage connections."""
         try:
             self.logger.info("Shutting down storage manager...")
-            
-            # Disconnect from storage systems
-            if self.cassandra_client:
-                await self.cassandra_client.disconnect()
-            
-            if self.elasticsearch_client:
-                await self.elasticsearch_client.disconnect()
-            
-            if self.minio_client:
-                await self.minio_client.disconnect()
-            
             self._initialized = False
             self.logger.info("Storage manager shut down successfully")
             
@@ -220,24 +185,6 @@ class StorageManager:
             stats["storage_systems"]["distributed_vector"] = {
                 "enabled": True,
                 "connected": True  # Always connected
-            }
-        
-        if self.cassandra_client:
-            stats["storage_systems"]["cassandra"] = {
-                "enabled": True,
-                "connected": self.cassandra_client.is_connected()
-            }
-        
-        if self.elasticsearch_client:
-            stats["storage_systems"]["elasticsearch"] = {
-                "enabled": True,
-                "connected": self.elasticsearch_client.is_connected()
-            }
-        
-        if self.minio_client:
-            stats["storage_systems"]["minio"] = {
-                "enabled": True,
-                "connected": self.minio_client.is_connected()
             }
         
         return stats 
