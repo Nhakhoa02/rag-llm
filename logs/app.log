@@ -563,3 +563,37 @@ HTTP Request: POST http://localhost:6333/collections/index_document/points/searc
 HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
 HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
 {"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T22:57:42.251802Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T22:57:56.766913Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T22:57:57.239890Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T22:57:57.269522Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000092194}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T22:57:57.296824Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000066126}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T22:57:57.338056Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000054843}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T22:57:57.372954Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T22:57:57.398168Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T22:58:09.375294Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T22:58:10.125749Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T22:58:10.155355Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000065066}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T22:58:10.191284Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000097023}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T22:58:10.302758Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.0000765}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T22:58:10.381418Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T22:59:36.731586Z"}
+{"document_id": "4b6c0a6f-122a-4397-ba25-1a683befc2dd", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp80y3si8m.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T22:59:36.741945Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "prompt": "\n            Analyze the following query and determine which indexes would be most relevant for sear", "event": "Text generation failed", "logger": "GeminiClient", "level": "error", "timestamp": "2025-06-23T23:00:24.776724Z"}
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "query": "anime girl with dark hair", "event": "Query analysis failed", "logger": "GeminiClient", "level": "error", "timestamp": "2025-06-23T23:00:24.803838Z"}
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "query": "anime girl with dark hair", "event": "Search failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:00:24.810494Z"}
+{"error": "404 Client Error: Not Found for url: http://localhost:6333/collections/index_images/points/scroll", "event": "Failed to list documents", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:01:01.302494Z"}
