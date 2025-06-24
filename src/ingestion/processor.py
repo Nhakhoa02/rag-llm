@@ -349,14 +349,77 @@ class TabularProcessor(LoggerMixin):
         return info
     
     def _convert_to_text(self, df: pd.DataFrame) -> str:
-        """Convert dataframe to text representation."""
-        # Limit the size for text representation
-        if len(df) > 1000:
-            df_sample = df.head(500).append(df.tail(500))
-            text = f"DataFrame with {len(df)} rows and {len(df.columns)} columns.\n"
-            text += "Showing first 500 and last 500 rows:\n\n"
-            text += df_sample.to_string(index=False)
-        else:
-            text = df.to_string(index=False)
+        """Convert dataframe to text representation that's AI-friendly."""
+        # Create a more structured, readable format for AI processing
+        text_parts = []
         
-        return text 
+        # Add dataset overview
+        text_parts.append(f"Dataset Overview:")
+        text_parts.append(f"- Total rows: {len(df)}")
+        text_parts.append(f"- Total columns: {len(df.columns)}")
+        text_parts.append(f"- Column names: {', '.join(df.columns.tolist())}")
+        text_parts.append("")
+        
+        # Add data types information
+        text_parts.append("Column Data Types:")
+        for col, dtype in df.dtypes.items():
+            text_parts.append(f"- {col}: {dtype}")
+        text_parts.append("")
+        
+        # Add missing values summary
+        missing_values = df.isnull().sum()
+        if missing_values.sum() > 0:
+            text_parts.append("Missing Values Summary:")
+            for col, missing_count in missing_values.items():
+                if missing_count > 0:
+                    percentage = (missing_count / len(df)) * 100
+                    text_parts.append(f"- {col}: {missing_count} missing values ({percentage:.1f}%)")
+            text_parts.append("")
+        
+        # Add sample data in a more readable format
+        text_parts.append("Sample Data:")
+        
+        # Limit the number of rows for readability
+        if len(df) > 50:
+            # Show first 25 and last 25 rows
+            sample_df = pd.concat([df.head(25), df.tail(25)], ignore_index=True)
+            text_parts.append(f"(Showing first 25 and last 25 rows out of {len(df)} total rows)")
+        else:
+            sample_df = df
+        
+        # Convert to a more readable format
+        for i in range(len(sample_df)):
+            row = sample_df.iloc[i]
+            row_text = f"Row {i + 1}: "
+            row_data = []
+            for col in df.columns:
+                value = row[col]
+                # Handle different data types
+                if pd.isna(value):
+                    row_data.append(f"{col}=NULL")
+                elif isinstance(value, (int, float)):
+                    row_data.append(f"{col}={value}")
+                else:
+                    # Truncate long string values
+                    str_value = str(value)
+                    if len(str_value) > 50:
+                        str_value = str_value[:47] + "..."
+                    row_data.append(f"{col}='{str_value}'")
+            row_text += ", ".join(row_data)
+            text_parts.append(row_text)
+        
+        # Add summary statistics for numeric columns
+        numeric_cols = df.select_dtypes(include=['number']).columns
+        if len(numeric_cols) > 0:
+            text_parts.append("")
+            text_parts.append("Numeric Column Statistics:")
+            for col in numeric_cols:
+                stats = df[col].describe()
+                text_parts.append(f"- {col}:")
+                text_parts.append(f"  * Count: {stats['count']:.0f}")
+                text_parts.append(f"  * Mean: {stats['mean']:.2f}")
+                text_parts.append(f"  * Min: {stats['min']:.2f}")
+                text_parts.append(f"  * Max: {stats['max']:.2f}")
+                text_parts.append(f"  * Std: {stats['std']:.2f}")
+        
+        return "\n".join(text_parts) 
