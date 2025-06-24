@@ -16,7 +16,7 @@ from ..utils.logging import get_logger
 from ..utils.metrics import metrics_collector
 from ..ingestion.processor import DocumentProcessor, ImageProcessor, TabularProcessor
 from ..ingestion.chunker import TextChunker
-from ..ai.gemini_client import GeminiClient
+from ..ai.gemini_client import GeminiClient, extract_gemini_text
 from ..storage.qdrant_client import QdrantClient
 
 # Initialize components
@@ -72,6 +72,21 @@ class SearchResponse(BaseModel):
     total_results: int
     query_analysis: Dict[str, Any]
     reasoning: Dict[str, Any]
+
+class AskRequest(BaseModel):
+    question: str
+    index_names: List[str] = []
+    limit: int = 10
+    score_threshold: float = 0.5
+    search_strategy: str = "hybrid"
+    include_sources: bool = True
+
+class AskResponse(BaseModel):
+    answer: str
+    confidence: float
+    sources: List[SearchResult]
+    reasoning: Dict[str, Any]
+    query_analysis: Dict[str, Any]
 
 class IndexInfo(BaseModel):
     name: str
@@ -339,6 +354,167 @@ async def search_documents(request: SearchRequest):
     except Exception as e:
         logger.error("Search failed", error=str(e), query=request.query)
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+# Ask endpoint - AI-powered question answering
+@app.post("/ask", response_model=AskResponse)
+async def ask_question(request: AskRequest):
+    """
+    Ask a question and get an AI-generated answer based on indexed content.
+    
+    This endpoint:
+    1. Searches for relevant content across indexes
+    2. Uses Gemini AI to generate a comprehensive answer
+    3. Provides reasoning and confidence scores
+    4. Includes source documents for transparency
+    """
+    try:
+        # First, perform a search to find relevant content
+        search_request = SearchRequest(
+            query=request.question,
+            index_names=request.index_names,
+            limit=request.limit,
+            score_threshold=request.score_threshold,
+            search_strategy=request.search_strategy
+        )
+        
+        # Get search results
+        search_response = await search_documents(search_request)
+        
+        if not search_response.results:
+            # No relevant content found
+            return AskResponse(
+                answer="I couldn't find any relevant information to answer your question. Please try rephrasing or uploading more relevant documents.",
+                confidence=0.0,
+                sources=[],
+                reasoning={
+                    "answer": "No relevant content found",
+                    "confidence": 0.0,
+                    "result_assessment": [],
+                    "missing_info": ["No relevant documents found"],
+                    "follow_up_queries": ["Try uploading relevant documents", "Rephrase your question"]
+                },
+                query_analysis=search_response.query_analysis
+            )
+        
+        # Use Gemini to generate a comprehensive answer
+        try:
+            # Create a prompt for answer generation
+            sources_text = "\n\n".join([
+                f"Source {i+1} (Score: {result.score:.3f}):\n{result.content[:1000]}"
+                for i, result in enumerate(search_response.results[:5])  # Top 5 sources
+            ])
+            
+            answer_prompt = f"""
+            Based on the following sources, please provide a comprehensive answer to the user's question.
+            
+            Question: "{request.question}"
+            
+            Sources:
+            {sources_text}
+            
+            Please provide:
+            1. A direct, comprehensive answer to the question
+            2. Your confidence level (0-1) in the answer
+            3. Reasoning for your answer
+            4. Any limitations or uncertainties
+            
+            Format your response as JSON:
+            {{
+                "answer": "Your comprehensive answer here",
+                "confidence": 0.85,
+                "reasoning": "Explanation of how you arrived at this answer",
+                "limitations": ["Any limitations or uncertainties"],
+                "sources_used": [0, 1, 2]  // Indices of most relevant sources
+            }}
+            
+            Guidelines:
+            - Be direct and comprehensive in your answer
+            - If the sources don't fully answer the question, acknowledge this
+            - If there are conflicting information in sources, mention this
+            - Provide specific details from the sources when relevant
+            - Be honest about confidence levels and limitations
+            """
+            
+            # Generate answer using Gemini
+            answer_response = await gemini_client.generate_text(answer_prompt, temperature=0.3)
+            
+            # Parse the answer
+            import json
+            try:
+                answer_text = extract_gemini_text(answer_response)
+                # Extract JSON from response
+                if "{" in answer_text and "}" in answer_text:
+                    start = answer_text.find("{")
+                    end = answer_text.rfind("}") + 1
+                    json_str = answer_text[start:end]
+                    answer_data = json.loads(json_str)
+                    
+                    answer = answer_data.get("answer", "I couldn't generate a proper answer.")
+                    confidence = answer_data.get("confidence", 0.5)
+                    reasoning_text = answer_data.get("reasoning", "Analysis completed")
+                    limitations = answer_data.get("limitations", [])
+                    sources_used = answer_data.get("sources_used", [])
+                    
+                else:
+                    # Fallback if JSON parsing fails
+                    answer = answer_text
+                    confidence = 0.6
+                    reasoning_text = "Answer generated from search results"
+                    limitations = ["JSON parsing failed"]
+                    sources_used = list(range(min(3, len(search_response.results))))
+                    
+            except (json.JSONDecodeError, KeyError) as e:
+                logger.warning(f"Answer JSON parsing failed: {e}")
+                answer = extract_gemini_text(answer_response)
+                confidence = 0.5
+                reasoning_text = "Answer generated from search results"
+                limitations = ["JSON parsing failed"]
+                sources_used = list(range(min(3, len(search_response.results))))
+            
+            # Prepare sources for response
+            sources = search_response.results if request.include_sources else []
+            
+            # Create reasoning object
+            reasoning = {
+                "answer": reasoning_text,
+                "confidence": confidence,
+                "limitations": limitations,
+                "sources_used": sources_used,
+                "result_assessment": search_response.reasoning.get("result_assessment", []),
+                "missing_info": search_response.reasoning.get("missing_info", []),
+                "follow_up_queries": search_response.reasoning.get("follow_up_queries", [])
+            }
+            
+            return AskResponse(
+                answer=answer,
+                confidence=confidence,
+                sources=sources,
+                reasoning=reasoning,
+                query_analysis=search_response.query_analysis
+            )
+            
+        except Exception as e:
+            logger.error(f"Answer generation failed: {e}")
+            # Fallback response
+            return AskResponse(
+                answer=f"I found some relevant information but couldn't generate a proper answer. Here are the search results: {search_response.results[0].content[:200]}...",
+                confidence=0.3,
+                sources=search_response.results if request.include_sources else [],
+                reasoning={
+                    "answer": "Answer generation failed, providing search results",
+                    "confidence": 0.3,
+                    "limitations": ["AI answer generation failed"],
+                    "sources_used": [0],
+                    "result_assessment": [],
+                    "missing_info": [],
+                    "follow_up_queries": []
+                },
+                query_analysis=search_response.query_analysis
+            )
+        
+    except Exception as e:
+        logger.error("Ask question failed", error=str(e), question=request.question)
+        raise HTTPException(status_code=500, detail=f"Ask question failed: {str(e)}")
 
 # Get indexes endpoint
 @app.get("/indexes", response_model=List[IndexInfo])
