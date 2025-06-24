@@ -4,7 +4,7 @@ Main FastAPI application for the distributed indexing system.
 
 import asyncio
 from typing import List, Dict, Any
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, Query
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, Query, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
@@ -525,14 +525,46 @@ async def get_indexes():
         
         indexes = []
         for col in collections:
-            index_info = IndexInfo(
-                name=col["name"],
-                type="vector",
-                size=col.get("vectors_count") or 0,
-                description=f"Vector index for {col['name']}",
-                status=col.get("status", "unknown")
-            )
-            indexes.append(index_info)
+            # Get detailed collection info to get accurate count
+            try:
+                collection_name = col["name"]
+                url = f"http://{settings.database.qdrant_host}:{settings.database.qdrant_port}/collections/{collection_name}"
+                response = requests.get(url)
+                response.raise_for_status()
+                collection_info = response.json()
+                
+                # Extract vectors count from the proper location in response
+                vectors_count = 0
+                if "result" in collection_info:
+                    result = collection_info["result"]
+                    # Try different possible field names for vectors count
+                    vectors_count = (
+                        result.get("vectors_count") or 
+                        result.get("points_count") or 
+                        result.get("count") or 
+                        0
+                    )
+                
+                index_info = IndexInfo(
+                    name=collection_name,
+                    type="vector",
+                    size=vectors_count,
+                    description=f"Vector index for {collection_name}",
+                    status=col.get("status", "green")
+                )
+                indexes.append(index_info)
+                
+            except Exception as e:
+                logger.warning(f"Failed to get detailed info for collection {col['name']}: {e}")
+                # Fallback to basic info
+                index_info = IndexInfo(
+                    name=col["name"],
+                    type="vector",
+                    size=0,  # Unknown count
+                    description=f"Vector index for {col['name']}",
+                    status=col.get("status", "unknown")
+                )
+                indexes.append(index_info)
         
         return indexes
         
@@ -610,6 +642,87 @@ async def delete_index(collection: str = Query(..., description="Collection name
     except Exception as e:
         logger.error(f"Failed to delete collection {collection}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete collection: {e}")
+
+# Document inspection endpoints
+@app.get("/document/{document_id}")
+async def get_document_by_id(
+    document_id: str = Path(..., description="Document ID to retrieve"),
+    collection: str = Query(..., description="Collection name")
+):
+    """
+    Get a specific document by its ID from a collection.
+    """
+    try:
+        # Use Qdrant REST API to get specific point
+        url = f"http://{settings.database.qdrant_host}:{settings.database.qdrant_port}/collections/{collection}/points/{document_id}"
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        logger.error(f"Failed to get document {document_id} from {collection}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get document: {str(e)}")
+
+@app.get("/collection_stats/{collection}")
+async def get_collection_statistics(collection: str):
+    """
+    Get detailed statistics about a collection.
+    """
+    try:
+        # Get collection info
+        url = f"http://{settings.database.qdrant_host}:{settings.database.qdrant_port}/collections/{collection}"
+        response = requests.get(url)
+        response.raise_for_status()
+        collection_info = response.json()
+        
+        # Get some sample documents
+        scroll_url = f"http://{settings.database.qdrant_host}:{settings.database.qdrant_port}/collections/{collection}/points/scroll"
+        scroll_response = requests.post(scroll_url, json={"limit": 5})
+        scroll_response.raise_for_status()
+        sample_docs = scroll_response.json()
+        
+        return {
+            "collection_name": collection,
+            "info": collection_info.get("result", {}),
+            "sample_documents": sample_docs.get("result", {}).get("points", []),
+            "total_documents": collection_info.get("result", {}).get("vectors_count", 0)
+        }
+    except Exception as e:
+        logger.error(f"Failed to get collection stats for {collection}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get collection stats: {str(e)}")
+
+@app.post("/search_by_metadata")
+async def search_by_metadata(
+    collection: str = Query(..., description="Collection name"),
+    metadata_filter: str = Query(..., description="JSON string with metadata filters"),
+    limit: int = Query(10, description="Number of documents to return")
+):
+    """
+    Search documents by metadata filters.
+    
+    Example metadata_filter: '{"file_path": {"$contains": "pdf"}}'
+    """
+    try:
+        import json
+        
+        # Parse metadata filter
+        try:
+            filter_data = json.loads(metadata_filter)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid JSON in metadata_filter")
+        
+        # Use Qdrant REST API with filter
+        url = f"http://{settings.database.qdrant_host}:{settings.database.qdrant_port}/collections/{collection}/points/scroll"
+        payload = {
+            "limit": limit,
+            "filter": filter_data
+        }
+        
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        logger.error(f"Failed to search by metadata in {collection}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to search by metadata: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(

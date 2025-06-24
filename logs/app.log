@@ -1791,3 +1791,121 @@ Use pytorch device: cpu
 HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
 HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
 HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:30:55.859043Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:31:10.230914Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:31:10.813224Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:31:25.479832Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:31:26.351269Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:31:50.888001Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:31:51.412336Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:32:06.259125Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:32:06.841517Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:33:03.204066Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:33:03.709214Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:33:03.735344Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000068638}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:33:03.748929Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000049422}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:33:03.769199Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000054268}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:33:03.780632Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:33:03.785474Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:33:17.371867Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:33:18.070900Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:33:18.100683Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000074982}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:33:18.131704Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000068105}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:33:18.148101Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000098781}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:33:18.179784Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:34:30.139873Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:34:30.149125Z"}
+{"caption": "Based on the Japanese text visible in the image, which reads \"\u76e3\u7763 \u7b46\u5742\u660e\u898f\" (Kantoku: Fudesaka Akinori), meaning \"Director: Akinori Fudesaka,\" this image is from the anime short film:\n\n**Anata no Heroine ni Naritai (\u3042\u306a\u305f\u306e\u30d2\u30ed\u30a4\u30f3\u306b\u306a\u308a\u305f\u3044)**, which translates to \"I Want to Be Your Heroine.\"\n\nIt's a short animation produced by **CloverWorks**, directed by Akinori Fudesaka, and features the song \"Aoi\" by the band sumika.", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:34:36.437499Z"}
+{"document_id": "9a7ffbb1-3a51-4d8b-8c2e-e133fbd6d386", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpim_l5gw4.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:34:36.449997Z"}
+{"event": "Document processed: 9a7ffbb1-3a51-4d8b-8c2e-e133fbd6d386", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:34:36.454046Z"}
+{"event": "AI metadata extracted for document: 9a7ffbb1-3a51-4d8b-8c2e-e133fbd6d386", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:34:39.496050Z"}
+{"original_id": "9a7ffbb1-3a51-4d8b-8c2e-e133fbd6d386", "num_chunks": 1, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-24T00:34:39.504135Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:34:39.511672Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:34:43.799971Z"}
+{"event": "Gemini text embedding used for image document: 9a7ffbb1-3a51-4d8b-8c2e-e133fbd6d386", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:34:43.814521Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000066742}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:34:43.847474Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000066742}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-24T00:34:43.851200Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:34:43.882312Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:34:43.885463Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"event": "JSON parsing failed: No JSON found in response, using fallback analysis", "logger": "GeminiClient", "level": "warning", "timestamp": "2025-06-24T00:35:17.006690Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:35:17.104819Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"event": "JSON parsing failed: No JSON found in response, using fallback analysis", "logger": "GeminiClient", "level": "warning", "timestamp": "2025-06-24T00:35:35.886881Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:35:35.968074Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:36:21.057510Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"event": "JSON parsing failed: No JSON found in response, using fallback analysis", "logger": "GeminiClient", "level": "warning", "timestamp": "2025-06-24T00:37:01.647055Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:37:01.736926Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"event": "Received upload: Warehouse_and_Retail_Sales-2019-2020.csv", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:38:00.351314Z"}
+{"event": "Processing file type: .csv", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:38:00.372024Z"}
+{"error": "'DataFrame' object has no attribute 'append'", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpmv_i1iek.csv", "event": "Tabular processing failed", "logger": "TabularProcessor", "level": "error", "timestamp": "2025-06-24T00:38:01.153027Z"}
+{"error": "'DataFrame' object has no attribute 'append'", "filename": "Warehouse_and_Retail_Sales-2019-2020.csv", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-24T00:38:01.158594Z"}
