@@ -11,7 +11,7 @@ from pathlib import Path
 # Import system components
 from src.ingestion.processor import DocumentProcessor
 from src.ingestion.chunker import TextChunker
-from src.ai.gemini_client import GeminiClient
+from src.ai.gemini_client import GeminiClient, extract_gemini_text
 from src.storage.qdrant_client import QdrantClient
 from src.utils.logging import setup_logging, get_logger
 
@@ -56,7 +56,8 @@ async def test_basic_functionality():
             
             # Test text generation
             response = await gemini_client.generate_text("Hello, how are you?")
-            logger.info(f"✓ Gemini AI working: {response.text[:50]}...")
+            response_text = extract_gemini_text(response)
+            logger.info(f"✓ Gemini AI working: {response_text[:50]}...")
             
             # Test metadata extraction
             metadata = await gemini_client.extract_metadata(

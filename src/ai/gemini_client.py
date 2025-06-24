@@ -79,7 +79,7 @@ class GeminiClient(LoggerMixin):
             )
             
             # Extract response
-            response_text = response.text if response.text else ""
+            response_text = extract_gemini_text(response)
             
             # Create response object
             gemini_response = GeminiResponse(
@@ -133,6 +133,8 @@ class GeminiClient(LoggerMixin):
             Available indexes:
             {indexes_info}
             
+            IMPORTANT: Even if indexes show size 0, they may still contain documents. Consider the query content and index types when making recommendations.
+            
             Please provide:
             1. A list of recommended indexes (by name) in order of relevance
             2. Reasoning for each recommendation
@@ -147,6 +149,12 @@ class GeminiClient(LoggerMixin):
                 "confidence": 0.85,
                 "query_type": "factual|analytical|creative"
             }}
+            
+            Guidelines:
+            - If query mentions images, photos, pictures, or visual content, include index_image
+            - If query mentions documents, text, PDFs, or written content, include index_document  
+            - If query mentions data, tables, spreadsheets, or numerical content, include index_tabular
+            - Always include at least 2-3 indexes unless the query is very specific
             """
             
             # Generate analysis
@@ -155,21 +163,60 @@ class GeminiClient(LoggerMixin):
             # Parse JSON response
             import json
             try:
-                analysis = json.loads(response.text)
-                return analysis
-            except json.JSONDecodeError:
-                # Fallback parsing
+                response_text = extract_gemini_text(response)
+                # Try to extract JSON from the response
+                if "{" in response_text and "}" in response_text:
+                    start = response_text.find("{")
+                    end = response_text.rfind("}") + 1
+                    json_str = response_text[start:end]
+                    analysis = json.loads(json_str)
+                    
+                    # Validate the analysis
+                    if "recommended_indexes" not in analysis or not analysis["recommended_indexes"]:
+                        raise ValueError("No recommended indexes in response")
+                    
+                    return analysis
+                else:
+                    raise ValueError("No JSON found in response")
+                    
+            except (json.JSONDecodeError, ValueError) as e:
+                self.logger.warning(f"JSON parsing failed: {e}, using fallback analysis")
+                # Smart fallback based on query content
+                query_lower = query.lower()
+                recommended_indexes = []
+                
+                # Analyze query content for index recommendations
+                if any(word in query_lower for word in ["image", "photo", "picture", "visual", "see", "show", "look"]):
+                    recommended_indexes.append("index_image")
+                
+                if any(word in query_lower for word in ["document", "text", "pdf", "file", "read", "content"]):
+                    recommended_indexes.append("index_document")
+                
+                if any(word in query_lower for word in ["data", "table", "spreadsheet", "number", "statistic", "chart"]):
+                    recommended_indexes.append("index_tabular")
+                
+                # If no specific matches, use all available indexes
+                if not recommended_indexes:
+                    recommended_indexes = [idx["name"] for idx in available_indexes]
+                
                 return {
-                    "recommended_indexes": [idx["name"] for idx in available_indexes[:3]],
-                    "reasoning": "Fallback: Using first 3 indexes",
+                    "recommended_indexes": recommended_indexes[:3],  # Limit to 3
+                    "reasoning": f"Fallback analysis: Query contains keywords suggesting {', '.join(recommended_indexes[:3])} indexes",
                     "search_strategy": "hybrid",
-                    "confidence": 0.5,
+                    "confidence": 0.6,
                     "query_type": "general"
                 }
                 
         except Exception as e:
             self.logger.error("Query analysis failed", error=str(e), query=query)
-            raise
+            # Final fallback
+            return {
+                "recommended_indexes": [idx["name"] for idx in available_indexes[:3]],
+                "reasoning": "Error in analysis: Using first 3 available indexes",
+                "search_strategy": "hybrid",
+                "confidence": 0.5,
+                "query_type": "general"
+            }
     
     @monitor_function("gemini_client", "extract_metadata", "metadata")
     async def extract_metadata(self, content: str, 
@@ -215,7 +262,7 @@ class GeminiClient(LoggerMixin):
             # Parse JSON response
             import json
             try:
-                metadata = json.loads(response.text)
+                metadata = json.loads(extract_gemini_text(response))
                 return metadata
             except json.JSONDecodeError:
                 return {
@@ -234,7 +281,7 @@ class GeminiClient(LoggerMixin):
     @monitor_function("gemini_client", "generate_embeddings", "embeddings")
     async def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
         """
-        Generate embeddings for text using Gemini.
+        Generate embeddings for text using a proper embedding model.
         
         Args:
             texts: List of texts to embed
@@ -243,22 +290,40 @@ class GeminiClient(LoggerMixin):
             List of embedding vectors
         """
         try:
-            # Note: Gemini doesn't have a direct embedding API, so we'll use a workaround
-            # In a real implementation, you might use a separate embedding service
-            
-            # For now, return placeholder embeddings
-            # In production, you'd use sentence-transformers or another embedding service
-            import numpy as np
-            
-            embeddings = []
-            for text in texts:
-                # Generate a deterministic embedding-like vector
-                # This is a placeholder - replace with actual embedding generation
-                embedding = np.random.normal(0, 1, 768).tolist()  # 768-dimensional vector
-                embeddings.append(embedding)
-            
-            self.logger.debug("Embeddings generated", num_texts=len(texts))
-            return embeddings
+            # Use sentence-transformers for proper text embeddings
+            try:
+                from sentence_transformers import SentenceTransformer
+                
+                # Load the model (this will download on first use)
+                model = SentenceTransformer('all-MiniLM-L6-v2')  # 384-dimensional embeddings
+                
+                # Generate embeddings
+                embeddings = model.encode(texts, convert_to_tensor=False)
+                
+                # Convert to list format (embeddings is a numpy array)
+                embeddings_list = embeddings.tolist()  # type: ignore
+                
+                self.logger.info(f"Generated {len(embeddings_list)} embeddings using sentence-transformers")
+                return embeddings_list
+                
+            except ImportError:
+                # Fallback to a simple hash-based embedding if sentence-transformers is not available
+                self.logger.warning("sentence-transformers not available, using hash-based embeddings")
+                
+                import hashlib
+                import numpy as np
+                
+                embeddings = []
+                for text in texts:
+                    # Create a deterministic embedding based on text hash
+                    text_hash = hashlib.md5(text.encode()).hexdigest()
+                    # Use the hash to seed a random number generator for consistent results
+                    np.random.seed(int(text_hash[:8], 16))
+                    embedding = np.random.normal(0, 1, 384).tolist()  # 384-dimensional vector
+                    embeddings.append(embedding)
+                
+                self.logger.info(f"Generated {len(embeddings)} hash-based embeddings")
+                return embeddings
             
         except Exception as e:
             self.logger.error("Embedding generation failed", error=str(e))
@@ -314,7 +379,7 @@ class GeminiClient(LoggerMixin):
             # Parse JSON response
             import json
             try:
-                reasoning = json.loads(response.text)
+                reasoning = json.loads(extract_gemini_text(response))
                 return reasoning
             except json.JSONDecodeError:
                 return {
@@ -327,4 +392,29 @@ class GeminiClient(LoggerMixin):
                 
         except Exception as e:
             self.logger.error("Result reasoning failed", error=str(e))
-            raise 
+            raise
+
+def extract_gemini_text(response):
+    # For multi-part responses (Gemini 2.5+)
+    if hasattr(response, "parts") and response.parts:
+        text_parts = []
+        for part in response.parts:
+            if hasattr(part, "text") and part.text:
+                text_parts.append(part.text)
+        return " ".join(text_parts)
+    
+    # For candidates/content.parts structure
+    if hasattr(response, "candidates") and response.candidates:
+        text_parts = []
+        for candidate in response.candidates:
+            if hasattr(candidate, "content") and hasattr(candidate.content, "parts"):
+                for part in candidate.content.parts:
+                    if hasattr(part, "text") and part.text:
+                        text_parts.append(part.text)
+        return " ".join(text_parts)
+    
+    # Fallback for simple text (deprecated but kept for compatibility)
+    if hasattr(response, "text") and response.text:
+        return response.text
+    
+    return "" 

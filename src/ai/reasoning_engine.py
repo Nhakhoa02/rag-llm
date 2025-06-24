@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from ..models.base import BaseDocument
 from ..utils.logging import get_logger
-from .gemini_client import GeminiClient
+from .gemini_client import GeminiClient, extract_gemini_text
 
 
 class ReasoningConfig(BaseModel):
@@ -80,8 +80,17 @@ class ReasoningEngine:
             )
             
             # Parse response
-            if response and hasattr(response, 'text') and response.text:
-                result = self._parse_reasoning_response(response.text)
+            if response:
+                # Extract text from response using proper method
+                response_text = extract_gemini_text(response)
+                if response_text:
+                    result = self._parse_reasoning_response(response_text)
+                else:
+                    result = ReasoningResult(
+                        success=False,
+                        reasoning="No response from AI model",
+                        conclusion="Analysis could not be completed"
+                    )
             else:
                 result = ReasoningResult(
                     success=False,
@@ -130,8 +139,17 @@ class ReasoningEngine:
             )
             
             # Parse response
-            if response and hasattr(response, 'text') and response.text:
-                result = self._parse_reasoning_response(response.text)
+            if response:
+                # Extract text from response using proper method
+                response_text = extract_gemini_text(response)
+                if response_text:
+                    result = self._parse_reasoning_response(response_text)
+                else:
+                    result = ReasoningResult(
+                        success=False,
+                        reasoning="No response from AI model",
+                        conclusion="Query analysis could not be completed"
+                    )
             else:
                 result = ReasoningResult(
                     success=False,
@@ -180,8 +198,17 @@ class ReasoningEngine:
             )
             
             # Parse response
-            if response and hasattr(response, 'text') and response.text:
-                result = self._parse_reasoning_response(response.text)
+            if response:
+                # Extract text from response using proper method
+                response_text = extract_gemini_text(response)
+                if response_text:
+                    result = self._parse_reasoning_response(response_text)
+                else:
+                    result = ReasoningResult(
+                        success=False,
+                        reasoning="No response from AI model",
+                        conclusion="Hypothesis could not be generated"
+                    )
             else:
                 result = ReasoningResult(
                     success=False,

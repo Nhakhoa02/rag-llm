@@ -597,3 +597,1102 @@ HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK
 {"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "query": "anime girl with dark hair", "event": "Query analysis failed", "logger": "GeminiClient", "level": "error", "timestamp": "2025-06-23T23:00:24.803838Z"}
 {"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "query": "anime girl with dark hair", "event": "Search failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:00:24.810494Z"}
 {"error": "404 Client Error: Not Found for url: http://localhost:6333/collections/index_images/points/scroll", "event": "Failed to list documents", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:01:01.302494Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:04:01.322148Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:04:14.504093Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:04:14.959767Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:04:14.978014Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000070047}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:04:15.006401Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000075169}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:04:15.061453Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000086791}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:04:15.115955Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:04:15.121953Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:04:30.556242Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:04:31.003161Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:04:31.020402Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000057075}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:04:31.050485Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000047568}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:04:31.081570Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000138557}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:04:31.114366Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:04:31.353323Z"}
+{"document_id": "c201a965-5f44-4d75-aa2b-80ce36a091d9", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpuns6g6qd.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:04:31.362322Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:06:57.416374Z"}
+{"document_id": "80dcc973-453a-4fce-8965-13c80e5149d4", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpr2qeefsc.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:06:57.426396Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:08:52.413358Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:09:06.262159Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:09:06.727506Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:09:06.747123Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000090578}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:09:06.773515Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000043693}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:09:06.788241Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000048175}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:09:06.799608Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:09:06.803270Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:09:19.450834Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:09:19.969733Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:09:19.988133Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.00004807}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:09:20.008357Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000044726}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:09:20.039220Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000095427}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:09:20.069159Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:09:20.080251Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:09:20.083905Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:09:20.299037Z"}
+{"document_id": "ad0ea4b8-7574-4660-8969-6177bc789b3c", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp8z2qqbh3.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:09:20.307140Z"}
+{"event": "Document processed: ad0ea4b8-7574-4660-8969-6177bc789b3c", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:09:20.312792Z"}
+{"event": "No content extracted from document: ad0ea4b8-7574-4660-8969-6177bc789b3c", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:09:20.316487Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:09:20.319492Z"}
+{"event": "No chunk texts to embed for document: ad0ea4b8-7574-4660-8969-6177bc789b3c", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:09:20.321492Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:11:11.654260Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:11:11.660461Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:11:11.854322Z"}
+{"document_id": "b689c243-6bd8-41c1-9b63-f496dc5cc4e7", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpyxw9rg79.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:11:11.866310Z"}
+{"event": "Document processed: b689c243-6bd8-41c1-9b63-f496dc5cc4e7", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:11:11.869906Z"}
+{"event": "No content extracted from document: b689c243-6bd8-41c1-9b63-f496dc5cc4e7", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:11:11.871923Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:11:11.874916Z"}
+{"event": "No chunk texts to embed for document: b689c243-6bd8-41c1-9b63-f496dc5cc4e7", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:11:11.876916Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:01.451332Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:01.456343Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:12:01.633775Z"}
+{"document_id": "a571b831-e435-4ae0-bac4-14e66bb43a78", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpemgt8z5e.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:12:01.640301Z"}
+{"event": "Document processed: a571b831-e435-4ae0-bac4-14e66bb43a78", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:01.644994Z"}
+{"event": "No content extracted from document: a571b831-e435-4ae0-bac4-14e66bb43a78", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:01.646430Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:01.651687Z"}
+{"event": "No chunk texts to embed for document: a571b831-e435-4ae0-bac4-14e66bb43a78", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:01.653691Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:03.569693Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:03.576695Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:12:03.753506Z"}
+{"document_id": "9bf6d07a-a0f1-4d89-8ca4-0716c3926eb9", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpq_hqqust.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:12:03.758772Z"}
+{"event": "Document processed: 9bf6d07a-a0f1-4d89-8ca4-0716c3926eb9", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:03.763877Z"}
+{"event": "No content extracted from document: 9bf6d07a-a0f1-4d89-8ca4-0716c3926eb9", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:03.768933Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:03.770952Z"}
+{"event": "No chunk texts to embed for document: 9bf6d07a-a0f1-4d89-8ca4-0716c3926eb9", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:03.772881Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:04.399620Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:04.404612Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:12:04.583647Z"}
+{"document_id": "78d14431-28a6-4fb7-94de-a1d8294afa29", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpls7bngb3.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:12:04.590730Z"}
+{"event": "Document processed: 78d14431-28a6-4fb7-94de-a1d8294afa29", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:04.594638Z"}
+{"event": "No content extracted from document: 78d14431-28a6-4fb7-94de-a1d8294afa29", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:04.597459Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:04.602435Z"}
+{"event": "No chunk texts to embed for document: 78d14431-28a6-4fb7-94de-a1d8294afa29", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:04.605536Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:06.272164Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:06.281683Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:12:06.477856Z"}
+{"document_id": "7c196f07-018d-40ef-a02b-1ad8aaf8fe4a", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp13a5qky8.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:12:06.484749Z"}
+{"event": "Document processed: 7c196f07-018d-40ef-a02b-1ad8aaf8fe4a", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:06.488822Z"}
+{"event": "No content extracted from document: 7c196f07-018d-40ef-a02b-1ad8aaf8fe4a", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:06.490865Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:12:06.492925Z"}
+{"event": "No chunk texts to embed for document: 7c196f07-018d-40ef-a02b-1ad8aaf8fe4a", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:12:06.494819Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:15:00.462130Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:17:23.100655Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:17:23.587238Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:17:23.604310Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.00006713}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:17:23.635944Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000085105}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:17:23.649577Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000121019}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:17:23.691510Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:17:23.699509Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:17:37.970451Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:17:38.466489Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:17:38.483498Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000060233}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:17:38.503448Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000067269}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:17:38.516866Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000058415}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:17:38.549836Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:17:45.948105Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:17:45.951247Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:17:46.181154Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "9f6de064-02cb-4e9d-a496-aff3ac0037f5", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpr8non_bd.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:18:12.207281Z"}
+{"event": "Document processed: 9f6de064-02cb-4e9d-a496-aff3ac0037f5", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:18:12.212492Z"}
+{"event": "No content extracted from document: 9f6de064-02cb-4e9d-a496-aff3ac0037f5", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:18:12.213492Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:18:12.216002Z"}
+{"event": "CLIP embedding used for image document: 9f6de064-02cb-4e9d-a496-aff3ac0037f5", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:18:12.218002Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000069066}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:18:12.231178Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000069066}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:18:12.235877Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.020613395}'", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:18:12.274060Z"}
+{"event": "Qdrant upsert failed: Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.020613395}'", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:18:12.281987Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:18:12.285542Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"error": "1 validation error for IndexInfo\nsize\n  Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/int_type", "event": "Failed to get indexes", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:19:36.993722Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:18.540903Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:20:34.038846Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:20:34.511850Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:34.527757Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.00004676}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:34.556174Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000080323}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:34.591994Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000272578}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:34.619645Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:34.623903Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:20:47.242731Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:20:47.692850Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:47.708832Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000069367}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:47.738671Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000080656}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:47.771248Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.00019388}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:47.803868Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:50.481046Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:50.486337Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:20:50.723653Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "0401b479-6493-402f-bfc0-29754f536750", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpi21tyj7h.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:20:53.156183Z"}
+{"event": "Document processed: 0401b479-6493-402f-bfc0-29754f536750", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:53.159288Z"}
+{"event": "No content extracted from document: 0401b479-6493-402f-bfc0-29754f536750", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:20:53.162249Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:53.166304Z"}
+{"event": "CLIP embedding used for image document: 0401b479-6493-402f-bfc0-29754f536750", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:20:53.168310Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000054269}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:53.192739Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000054269}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:20:53.198872Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.009897928}'", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:20:53.221363Z"}
+{"event": "Qdrant upsert failed: Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.009897928}'", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:20:53.226644Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:20:53.232630Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:21:19.702280Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:21:19.707149Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:21:19.972938Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "2cfb59c9-7c24-449e-90ef-949583921620", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp_s9bq92c.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:21:25.228948Z"}
+{"event": "Document processed: 2cfb59c9-7c24-449e-90ef-949583921620", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:21:25.234259Z"}
+{"event": "No content extracted from document: 2cfb59c9-7c24-449e-90ef-949583921620", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:21:25.237391Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:21:25.239414Z"}
+{"event": "CLIP embedding used for image document: 2cfb59c9-7c24-449e-90ef-949583921620", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:21:25.241392Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00006236}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:21:25.271201Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00006236}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:21:25.276181Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.005113902}'", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:21:25.296172Z"}
+{"event": "Qdrant upsert failed: Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.005113902}'", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:21:25.302234Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:21:25.305350Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:22:41.273407Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:22:55.588235Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:22:56.055769Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:22:56.076033Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000157561}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:22:56.104714Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000058149}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:22:56.122551Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000058868}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:22:56.146514Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:22:56.154467Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:23:14.100591Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:23:14.731017Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:23:14.755944Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000062142}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:23:14.778814Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000061766}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:23:14.795326Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000057143}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:23:14.811372Z"}
+HTTP Request: DELETE http://localhost:6333/collections/image_index "HTTP/1.1 200 OK"
+{"collection_name": "image_index", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:23:33.414358Z"}
+{"event": "Collection deleted: image_index", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:23:33.417616Z"}
+HTTP Request: DELETE http://localhost:6333/collections/image_index "HTTP/1.1 200 OK"
+{"collection_name": "image_index", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:23:34.362838Z"}
+{"event": "Collection deleted: image_index", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:23:34.365837Z"}
+HTTP Request: DELETE http://localhost:6333/collections/tabular_index "HTTP/1.1 200 OK"
+{"collection_name": "tabular_index", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:23:47.785635Z"}
+{"event": "Collection deleted: tabular_index", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:23:47.789932Z"}
+HTTP Request: DELETE http://localhost:6333/collections/document_index "HTTP/1.1 200 OK"
+{"collection_name": "document_index", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:23:56.552225Z"}
+{"event": "Collection deleted: document_index", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:23:56.562893Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:24:08.099759Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:24:08.104718Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:24:08.313531Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "f5f5d8eb-f1ea-4aab-8911-f19a3f7fc1d7", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpm6vu2k5f.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:24:12.223291Z"}
+{"event": "Document processed: f5f5d8eb-f1ea-4aab-8911-f19a3f7fc1d7", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:24:12.227197Z"}
+{"event": "No content extracted from document: f5f5d8eb-f1ea-4aab-8911-f19a3f7fc1d7", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:24:12.231198Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:24:12.233193Z"}
+{"event": "CLIP embedding used for image document: f5f5d8eb-f1ea-4aab-8911-f19a3f7fc1d7", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:24:12.236518Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000048132}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:24:12.245003Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000048132}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:24:12.249899Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.006239766}'", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:24:12.278090Z"}
+{"event": "Qdrant upsert failed: Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.006239766}'", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:24:12.289808Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:24:12.293808Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:27:29.445145Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:27:29.449146Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:27:29.650504Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "e3ea45ec-908d-48d1-8092-a96875942045", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp61pqkon6.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:27:34.222111Z"}
+{"event": "Document processed: e3ea45ec-908d-48d1-8092-a96875942045", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:27:34.227758Z"}
+{"event": "No content extracted from document: e3ea45ec-908d-48d1-8092-a96875942045", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:27:34.229902Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:27:34.232102Z"}
+{"event": "CLIP embedding used for image document: e3ea45ec-908d-48d1-8092-a96875942045", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:27:34.234617Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000079527}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:27:34.264347Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000079527}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:27:34.269044Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.009875205}'", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:27:34.294407Z"}
+{"event": "Qdrant upsert failed: Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.009875205}'", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:27:34.299648Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:27:34.303469Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:28:51.319515Z"}
+{"event": "Collection deleted: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:28:51.322146Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:28:57.273547Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:28:57.278547Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:28:57.450532Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "67963c43-40de-43b3-9b8f-ce46fcdab7c5", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp5ix5uzn9.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:29:00.803416Z"}
+{"event": "Document processed: 67963c43-40de-43b3-9b8f-ce46fcdab7c5", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:29:00.806419Z"}
+{"event": "No content extracted from document: 67963c43-40de-43b3-9b8f-ce46fcdab7c5", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:29:00.810425Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:29:00.812809Z"}
+{"event": "CLIP embedding used for image document: 67963c43-40de-43b3-9b8f-ce46fcdab7c5", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:29:00.814814Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "vector_size": 512, "shards": 3, "replicas": 2, "event": "Collection created successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:29:01.398812Z"}
+{"event": "Collection created or exists: index_image (vector_size=512)", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:29:01.401983Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:29:01.442589Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:29:01.447962Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"event": "Using CLIP text embedding for image search query", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:29:36.315625Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.001242473}'", "collection_name": "index_document", "event": "Vector search failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:29:36.345613Z"}
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.001242473}'", "event": "Search failed for index index_document", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:29:36.350448Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.000606471}'", "collection_name": "index_tabular", "event": "Vector search failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:29:36.390635Z"}
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.000606471}'", "event": "Search failed for index index_tabular", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:29:36.396681Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"error": "1 validation error for IndexInfo\nsize\n  Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/int_type", "event": "Failed to get indexes", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:29:38.870630Z"}
+{"error": "404 Client Error: Not Found for url: http://localhost:6333/collections/image_index/points/scroll", "event": "Failed to list documents", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:30:10.793134Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:31:45.651904Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:32:02.944948Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:32:03.406594Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:32:03.425565Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000138803}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:32:03.437879Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000048135}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:32:03.470773Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000273761}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:32:03.502328Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:32:03.507297Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:32:19.431464Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:32:19.948947Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:32:19.967889Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000081848}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:32:19.990160Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.0000755}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:32:20.003245Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000058721}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:32:20.037321Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:34:16.004724Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:34:16.008782Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:34:16.221915Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "d1aac09d-6b77-4901-b067-9b5a53075497", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpz_f27j71.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:34:20.608242Z"}
+{"event": "Document processed: d1aac09d-6b77-4901-b067-9b5a53075497", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:34:20.611243Z"}
+{"event": "No content extracted from document: d1aac09d-6b77-4901-b067-9b5a53075497", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:34:20.613242Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:34:20.616779Z"}
+{"event": "CLIP embedding used for image document: d1aac09d-6b77-4901-b067-9b5a53075497", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:34:20.618779Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000055998}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:34:20.628843Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000055998}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:34:20.633798Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:34:20.668918Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:34:20.672774Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"event": "Using CLIP text embedding for image search query", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:35:26.192020Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.001156918}'", "collection_name": "index_document", "event": "Vector search failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:35:26.217006Z"}
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.001156918}'", "event": "Search failed for index index_document", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:35:26.223451Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.000744809}'", "collection_name": "index_tabular", "event": "Vector search failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:35:26.263648Z"}
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.000744809}'", "event": "Search failed for index index_tabular", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:35:26.271318Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:35:28.556904Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:35:44.923331Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:35:45.416573Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:35:45.433062Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000119137}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:35:45.465020Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000068285}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:35:45.495435Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000051954}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:35:45.508902Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:35:45.514365Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:35:59.677535Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:36:00.198798Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:00.220363Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000047237}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:36:00.253067Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000042941}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:36:00.264063Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000061869}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:36:00.275686Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"event": "Using CLIP text embedding for image search query", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:10.801299Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.001032496}'", "collection_name": "index_document", "event": "Vector search failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:36:10.814402Z"}
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.001032496}'", "event": "Search failed for index index_document", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:36:10.819790Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 400 Bad Request"
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.00058501}'", "collection_name": "index_tabular", "event": "Vector search failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:36:10.844204Z"}
+{"error": "Unexpected Response: 400 (Bad Request)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Vector dimension error: expected dim: 768, got 512\"},\"time\":0.00058501}'", "event": "Search failed for index index_tabular", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:36:10.847995Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:23.891326Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:23.895326Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:36:24.096670Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "b7840d22-4e98-4c3d-a410-c8a05df6dc9d", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpyims0m86.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:36:27.847369Z"}
+{"event": "Document processed: b7840d22-4e98-4c3d-a410-c8a05df6dc9d", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:27.851384Z"}
+{"event": "No content extracted from document: b7840d22-4e98-4c3d-a410-c8a05df6dc9d", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:36:27.855369Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:27.857371Z"}
+{"event": "CLIP embedding used for image document: b7840d22-4e98-4c3d-a410-c8a05df6dc9d", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:27.858370Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000064156}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:36:27.871893Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000064156}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:36:27.875582Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:36:27.905639Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:36:27.908843Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:37:17.219922Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:37:17.224098Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:37:17.420569Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "3b686036-d6c8-4765-b105-dbcb2af4249a", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp_d9nebb7.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:37:21.671536Z"}
+{"event": "Document processed: 3b686036-d6c8-4765-b105-dbcb2af4249a", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:37:21.674536Z"}
+{"event": "No content extracted from document: 3b686036-d6c8-4765-b105-dbcb2af4249a", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:37:21.677038Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:37:21.679128Z"}
+{"event": "CLIP embedding used for image document: 3b686036-d6c8-4765-b105-dbcb2af4249a", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:37:21.681143Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000062774}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:37:21.691935Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000062774}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:37:21.696116Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:37:21.738540Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:37:21.741213Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:39:30.561273Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:39:30.563791Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:39:30.761450Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "0d41f910-d815-426b-a337-193123376cf5", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmppizmybr9.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:39:34.325797Z"}
+{"event": "Document processed: 0d41f910-d815-426b-a337-193123376cf5", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:39:34.329796Z"}
+{"event": "No content extracted from document: 0d41f910-d815-426b-a337-193123376cf5", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:39:34.331797Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:39:34.334305Z"}
+{"event": "CLIP embedding used for image document: 0d41f910-d815-426b-a337-193123376cf5", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:39:34.335305Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000062306}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:39:34.364385Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000062306}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:39:34.368578Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:39:34.396098Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:39:34.399750Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:40:49.624084Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:41:04.016920Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:41:04.519065Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:04.536062Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000220629}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:41:04.563332Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000043187}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:41:04.573840Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000043622}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:41:04.585747Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:04.590607Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:41:18.930814Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:41:19.439358Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:19.461945Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000052823}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:41:19.489675Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000056254}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:41:19.521118Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000044328}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:41:19.550677Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:28.990482Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:28.997482Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:41:29.241970Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "a96894c9-128e-40ae-afec-9ee6babf4447", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpv7ywlod_.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:41:34.166929Z"}
+{"event": "Document processed: a96894c9-128e-40ae-afec-9ee6babf4447", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:34.170440Z"}
+{"event": "No content extracted from document: a96894c9-128e-40ae-afec-9ee6babf4447", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:41:34.172439Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:34.177735Z"}
+{"event": "CLIP embedding used for image document: a96894c9-128e-40ae-afec-9ee6babf4447", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:34.178733Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000077907}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:41:34.210588Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000077907}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:41:34.214735Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:41:34.249778Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:41:34.252424Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:44:58.356471Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:45:15.412892Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:45:15.936561Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:45:15.953212Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000256792}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:45:15.984410Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000055833}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:45:16.015657Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.0000504}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:45:16.043656Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:45:16.091937Z"}
+{"event": "Collection deleted: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:45:16.095795Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:46:07.575522Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:46:07.583063Z"}
+{"error": "tesseract is not installed or it's not in your PATH. See README file for more information.", "event": "OCR failed", "logger": "ImageProcessor", "level": "warning", "timestamp": "2025-06-23T23:46:07.774863Z"}
+{"caption": "This image is a beautifully rendered anime still, likely from an animated film or series, featuring a young female character in the foreground.\n\nHere's a detailed breakdown:\n\n**Character:**\n*   **Pose and Expression:** The character is depicted in profile, facing towards the left side of the frame and looking slightly downwards. Her expression appears pensive, thoughtful, or perhaps a little melancholic.\n*   **Hair:** She has dark hair (possibly a very deep purple or black) with striking green or teal highlights, particularly noticeable around her face and within the bun-like style on the back of her head. Some strands softly frame her face.\n*   **Eyes:** Her eyes are large, expressive, and feature intricate details with a mix of blue and purple hues in the iris. Prominent yellow/orange reflections and bright catchlights indicate a strong light source directly illuminating them.\n*   **Skin:** Her skin appears fair and is bathed in a warm, soft glow, particularly on the left side of her face and shoulders, due to the intense lighting. Small, shimmering light particles are scattered around her hair and shoulders, adding to the ethereal quality.\n*   **Outfit:** She is wearing an off-shoulder garment, possibly a dress or top, which is mostly out of frame but reveals her bare shoulders. A delicate light pink or white bow is visible on her left shoulder, suggesting a refined or elegant design. A thin, dark band (possibly a choker) is also visible around her neck.\n\n**Background & Lighting:**\n*   The background features a soft, atmospheric gradient. It transitions from a very bright, warm yellow/white on the left side (where the primary light source is emanating from) to a serene, cool teal-blue on the right.\n*   The lighting is a key element, creating a dreamlike and ethereal ambiance. A powerful light source from the upper left casts a strong back- and rim-light on the character, highlighting her silhouette and features with a soft glow.\n\n**Text:**\n*   In the upper right portion of the image, there are Japanese characters: \"\u76e3\u7763 \u7b46\u5742\u660e\u898f\".\n    *   \"\u76e3\u7763\" (kantoku) means \"Director.\"\n    *   \"\u7b46\u5742\u660e\u898f\" (Fudesaka Akinori) is a Japanese name.\n    *   This indicates that the image is likely a credit screen from an animated production, crediting Akinori Fudesaka as the director.\n\nOverall, the image conveys a sense of quiet contemplation and beauty, utilizing soft lighting and vibrant character design typical of modern anime.", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:46:20.671743Z"}
+Loaded ViT-B-32 model config.
+Loading pretrained ViT-B-32 weights (laion2b_s34b_b79k).
+{"document_id": "ed353b9e-dd20-4577-9ce9-08f7e9968af2", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpsm6qn9og.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:46:23.199781Z"}
+{"event": "Document processed: ed353b9e-dd20-4577-9ce9-08f7e9968af2", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:46:23.203534Z"}
+{"event": "AI metadata extracted for document: ed353b9e-dd20-4577-9ce9-08f7e9968af2", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:46:26.833087Z"}
+{"original_id": "ed353b9e-dd20-4577-9ce9-08f7e9968af2", "num_chunks": 4, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-23T23:46:26.841100Z"}
+{"event": "Document chunked: 4 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:46:26.849794Z"}
+{"event": "CLIP embedding used for image document: ed353b9e-dd20-4577-9ce9-08f7e9968af2", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:46:26.852799Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "vector_size": 512, "shards": 3, "replicas": 2, "event": "Collection created successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:46:27.434613Z"}
+{"event": "Collection created or exists: index_image (vector_size=512)", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:46:27.439043Z"}
+{"error": "Number of vectors must match number of documents", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:46:27.441697Z"}
+{"event": "Qdrant upsert failed: Number of vectors must match number of documents", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:46:27.444733Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:46:27.450027Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:48:30.419846Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:48:46.912624Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:48:47.446610Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:48:47.470383Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000179058}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:48:47.503338Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000056548}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:48:47.534518Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000058307}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:48:47.563400Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:48:59.886997Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:49:16.212687Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:49:16.756265Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:49:16.776175Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000077101}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:49:16.789201Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000048244}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:49:16.800791Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.00004565}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:49:16.810808Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:49:23.150621Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:52:47.715488Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:52:48.266207Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:52:48.288231Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000112071}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:52:48.311805Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000048251}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:52:48.327484Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000074566}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:52:48.358775Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:52:49.455102Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:53:06.524712Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:53:07.247917Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:07.274590Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000064183}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:53:07.288747Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000049502}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:53:07.307756Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000073627}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:53:07.323972Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:10.349003Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:10.357621Z"}
+{"caption": "This image is a beautifully lit anime still, likely from an opening or ending sequence, featuring a young woman and Japanese credits.\n\n**Visual Description:**\nThe central focus is a female character, depicted in profile and facing towards the left side of the frame, with her gaze directed slightly downwards. She has dark hair, styled in a bun or intricate updo, with a few strands elegantly framing her face. Subtle green highlights are visible within her dark hair, particularly near the top. A light-colored (possibly pale pink or white) ribbon is tied at the back of her head, adding a delicate detail. Her visible eye is large and expressive, rendered with a captivating blend of blues, purples, and warm yellows/oranges, suggesting reflections or a unique light source. Her skin appears soft and glowing, with the play of light and shadow emphasizing her delicate features. She seems to be wearing a garment that exposes her shoulders.\n\nThe scene is dramatically lit by a strong, warm light source emanating from the upper left, casting a brilliant glow and creating a luminous halo effect around the character's head and shoulders. This intense backlighting gives the image an ethereal and dreamlike quality. The background is a soft, gradient blend, transitioning from a bright, warm yellow and orange on the left to a calming, cool teal or light blue on the right, enhancing the serene and evocative atmosphere.\n\n**Textual Information:**\nIn the upper right section of the image, there is Japanese text that reads:\n**\u76e3\u7763 \u7b46\u5742\u660e\u898f**\n\n*   **\u76e3\u7763 (Kantoku)** means \"Director.\"\n*   **\u7b46\u5742\u660e\u898f (Fudesaka Akinori)** is the name of the director.\n\nTherefore, the image serves as a credit screen, identifying Akinori Fudesaka as the director.", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:53:18.910379Z"}
+{"document_id": "52e50a13-e0d5-4187-91fd-fc374272985f", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpkwlktqrk.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:53:18.938264Z"}
+{"event": "Document processed: 52e50a13-e0d5-4187-91fd-fc374272985f", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:18.943013Z"}
+{"event": "AI metadata extracted for document: 52e50a13-e0d5-4187-91fd-fc374272985f", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:22.918988Z"}
+{"original_id": "52e50a13-e0d5-4187-91fd-fc374272985f", "num_chunks": 3, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-23T23:53:22.928607Z"}
+{"event": "Document chunked: 3 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:22.935891Z"}
+{"event": "CLIP embedding used for image document: 52e50a13-e0d5-4187-91fd-fc374272985f", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:22.940477Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00015074}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:53:22.974854Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00015074}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-23T23:53:22.979296Z"}
+{"error": "Number of vectors must match number of documents", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:53:22.981922Z"}
+{"event": "Qdrant upsert failed: Number of vectors must match number of documents", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:53:22.985343Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:53:22.989349Z"}
+HTTP Request: DELETE http://localhost:6333/collections/image_index "HTTP/1.1 200 OK"
+{"collection_name": "image_index", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:53:26.090400Z"}
+{"event": "Collection deleted: image_index", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:26.093548Z"}
+HTTP Request: DELETE http://localhost:6333/collections/image_index "HTTP/1.1 200 OK"
+{"collection_name": "image_index", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:53:27.431079Z"}
+{"event": "Collection deleted: image_index", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:27.436165Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:53:37.462902Z"}
+{"event": "Collection deleted: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:37.465058Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:41.420186Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:41.424592Z"}
+{"caption": "Based on the image provided, the Japanese text on the right side reads:\n\n**\u76e3\u7763 \u7b46\u5742\u660e\u898f**\n\nTranslation:\n*   **\u76e3\u7763 (kantoku)**: Director\n*   **\u7b46\u5742\u660e\u898f (Fudesaka Akinori)**: Fudesaka Akinori (a person's name)\n\nTherefore, the text indicates the director's name.", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:53:43.536986Z"}
+{"document_id": "7891ecce-b52a-4a85-aae6-3795d3348411", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp5a7hugqv.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:53:43.544317Z"}
+{"event": "Document processed: 7891ecce-b52a-4a85-aae6-3795d3348411", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:43.547781Z"}
+{"event": "AI metadata extracted for document: 7891ecce-b52a-4a85-aae6-3795d3348411", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:46.537997Z"}
+{"original_id": "7891ecce-b52a-4a85-aae6-3795d3348411", "num_chunks": 1, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-23T23:53:46.540842Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:46.542940Z"}
+{"event": "CLIP embedding used for image document: 7891ecce-b52a-4a85-aae6-3795d3348411", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:46.544850Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "vector_size": 512, "shards": 3, "replicas": 2, "event": "Collection created successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:53:47.214663Z"}
+{"event": "Collection created or exists: index_image (vector_size=512)", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:53:47.218004Z"}
+{"error": "6 validation errors for PointStruct\nvector.list[float]\n  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/list_type\nvector.list[list[float]]\n  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/list_type\nvector.dict[str,union[list[float],SparseVector,list[list[float]],Document,Image,InferenceObject]]\n  Input should be a valid dictionary [type=dict_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/dict_type\nvector.Document\n  Input should be a valid dictionary or instance of Document [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/model_type\nvector.Image\n  Input should be a valid dictionary or instance of Image [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/model_type\nvector.InferenceObject\n  Input should be a valid dictionary or instance of InferenceObject [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/model_type", "collection_name": "index_image", "event": "Vector upsert failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:53:47.223672Z"}
+{"event": "Qdrant upsert failed: 6 validation errors for PointStruct\nvector.list[float]\n  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/list_type\nvector.list[list[float]]\n  Input should be a valid list [type=list_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/list_type\nvector.dict[str,union[list[float],SparseVector,list[list[float]],Document,Image,InferenceObject]]\n  Input should be a valid dictionary [type=dict_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/dict_type\nvector.Document\n  Input should be a valid dictionary or instance of Document [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/model_type\nvector.Image\n  Input should be a valid dictionary or instance of Image [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/model_type\nvector.InferenceObject\n  Input should be a valid dictionary or instance of InferenceObject [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.5/v/model_type", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:53:47.242056Z"}
+{"error": "", "filename": "Screenshot 2025-06-23 212144.png", "event": "File upload failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:53:47.260063Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:54:39.656999Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:54:55.057038Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:54:55.725924Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:54:55.753337Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000056743}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:54:55.783071Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000053001}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:54:55.798263Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000056941}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:54:55.811456Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:54:55.815698Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:55:16.182371Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:55:16.872281Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:55:16.901626Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000101638}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:16.929819Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00007295}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:16.948335Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.00007855}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:16.966146Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:55:16.974666Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:55:36.513614Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:55:37.916528Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:55:37.943528Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000065023}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:37.958667Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000076832}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:37.979443Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000068968}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:37.996781Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:55:38.003127Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:55:58.427923Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:55:59.091616Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:55:59.114437Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000069269}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:59.131330Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000074}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:59.146407Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.00014365}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:55:59.182855Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:56:15.361617Z"}
+{"event": "Collection deleted: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:15.364337Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:56:17.163712Z"}
+{"event": "Collection deleted: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:17.166464Z"}
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:30.145817Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:30.151319Z"}
+{"caption": "Based on the Japanese text visible in the image, \"\u76e3 \u7763 \u7b46\u5742\u660e\u898f\" (Kantoku Hitsusaka Akinori), which translates to \"Director Akinori Hitsusaka\":\n\nThe image is from the animated music video for **YOASOBI's song \"\u30a2\u30a4\u30c9\u30eb\" (Idol)**.\n\nThis song is most famously known as the opening theme for the anime series **Oshi no Ko**.\n\nSo, the director is **Akinori Hitsusaka (\u7b46\u5742\u660e\u898f)**, and the image is from the music video for **YOASOBI's \"Idol\"**, which is the opening for **Oshi no Ko**.", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:56:38.246016Z"}
+{"document_id": "5d3970af-e454-4794-a242-5e21f0823c8b", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpx26xg6dx.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-23T23:56:38.258029Z"}
+{"event": "Document processed: 5d3970af-e454-4794-a242-5e21f0823c8b", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:38.262227Z"}
+{"event": "AI metadata extracted for document: 5d3970af-e454-4794-a242-5e21f0823c8b", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:41.421046Z"}
+{"original_id": "5d3970af-e454-4794-a242-5e21f0823c8b", "num_chunks": 1, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-23T23:56:41.429140Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:41.437159Z"}
+{"event": "Gemini text embedding used for image document: 5d3970af-e454-4794-a242-5e21f0823c8b", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:41.444156Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "vector_size": 768, "shards": 3, "replicas": 2, "event": "Collection created successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:56:42.053820Z"}
+{"event": "Collection created or exists: index_image (vector_size=768)", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:42.058157Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:56:42.075103Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:56:42.077723Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "prompt": "\n            Analyze the following query and determine which indexes would be most relevant for sear", "event": "Text generation failed", "logger": "GeminiClient", "level": "error", "timestamp": "2025-06-23T23:57:23.931331Z"}
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "query": "anime girl with dark hair", "event": "Query analysis failed", "logger": "GeminiClient", "level": "error", "timestamp": "2025-06-23T23:57:23.944568Z"}
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "query": "anime girl with dark hair", "event": "Search failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:57:23.953565Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:57:42.423863Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:57:57.589052Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:57:58.125440Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:57:58.153223Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000095931}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:57:58.186384Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000068371}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:57:58.216930Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000056108}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:57:58.230170Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "prompt": "\n            Analyze the following search results for the query: \"Based on the Japanese text visible", "event": "Text generation failed", "logger": "GeminiClient", "level": "error", "timestamp": "2025-06-23T23:58:39.038751Z"}
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "event": "Result reasoning failed", "logger": "GeminiClient", "level": "error", "timestamp": "2025-06-23T23:58:39.052756Z"}
+{"error": "The `response.text` quick accessor only works for simple (single-`Part`) text responses. This response is not simple text.Use the `result.parts` accessor or the full `result.candidates[index].content.parts` lookup instead.", "query": "Based on the Japanese text visible in the image, \"\u76e3 \u7763 \u7b46\u5742\u660e\u898f\" (Kantoku Hitsusaka Akinori), which translates to \"Director Akinori Hitsusaka\":\n\nThe image is from the animated music video for **YOASOBI's song \"\u30a2\u30a4\u30c9\u30eb\" (Idol)**.\n\nThis song is most famously known as the opening theme for the anime series **Oshi no Ko**.\n\nSo, the director is **Akinori Hitsusaka (\u7b46\u5742\u660e\u898f)**, and the image is from the music video for **YOASOBI's \"Idol\"**, which is the opening for **Oshi no Ko**.", "event": "Search failed", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-23T23:58:39.062756Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:59:03.158492Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:59:17.437467Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:59:17.979862Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:59:18.002866Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000051578}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:18.016711Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000048301}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:18.031641Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000054547}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:18.065831Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:59:18.070559Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:59:36.533634Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:59:37.288608Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:59:37.322649Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.00009434}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:37.338077Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000287982}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:37.359221Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000088514}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:37.375989Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:59:37.383382Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-23T23:59:56.864071Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-23T23:59:57.366021Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:59:57.385028Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.00005336}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:57.398836Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00017237}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:57.430623Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000047953}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-23T23:59:57.441482Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-23T23:59:57.446482Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:00:11.373720Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:00:11.893214Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:00:11.913326Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.00006211}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:00:11.939569Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000067074}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:00:11.955765Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000052523}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:00:11.983304Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"error": "404 Client Error: Not Found for url: http://localhost:6333/collections/image_index/points/scroll", "event": "Failed to list documents", "logger": "src.api.main", "level": "error", "timestamp": "2025-06-24T00:03:16.082904Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:05:45.518606Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:06:00.675405Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:06:01.424329Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:01.446334Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.00006252}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:01.473007Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000102355}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:01.505189Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000059863}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:01.535045Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:01.540992Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:06:17.988333Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:06:18.642560Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:18.663566Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000050236}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:18.674641Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000060285}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:18.689897Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000066751}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:18.703014Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:18.708484Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:06:35.961205Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:06:36.621056Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:36.642315Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000055551}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:36.668317Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000049107}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:36.682216Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000058032}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:36.715875Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:36.721410Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:06:53.305790Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:06:53.753776Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:53.772129Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000054045}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:53.802617Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000070099}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:53.834037Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000046293}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:06:53.864332Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:06:53.906907Z"}
+{"event": "Collection deleted: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:06:53.908977Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+{"collection_name": "index_document", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:07:02.071246Z"}
+{"event": "Collection deleted: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:07:02.073890Z"}
+HTTP Request: DELETE http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"collection_name": "index_tabular", "event": "Collection deleted", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:07:08.719598Z"}
+{"event": "Collection deleted: index_tabular", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:07:08.722971Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+{"event": "Received upload: Screenshot 2025-06-23 212144.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:07:41.109809Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:07:41.117440Z"}
+{"caption": "The Japanese text in the image says:\n\n**\u76e3\u7763 \u7b46\u5742\u660e\u898f**\n\nIn Romaji, this is:\n\n**Kantoku Fudesaka Akinori**\n\nThis translates to:\n\n**Director Akinori Fudesaka**", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:07:43.981231Z"}
+{"document_id": "05f35fcc-90d3-4e34-b506-f2d4434aa3b8", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp79f3a2sz.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:07:43.996535Z"}
+{"event": "Document processed: 05f35fcc-90d3-4e34-b506-f2d4434aa3b8", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:07:44.005545Z"}
+{"event": "AI metadata extracted for document: 05f35fcc-90d3-4e34-b506-f2d4434aa3b8", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:07:49.150901Z"}
+{"original_id": "05f35fcc-90d3-4e34-b506-f2d4434aa3b8", "num_chunks": 1, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-24T00:07:49.156897Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:07:49.164497Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:08:00.890340Z"}
+{"event": "Gemini text embedding used for image document: 05f35fcc-90d3-4e34-b506-f2d4434aa3b8", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:08:00.902591Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "vector_size": 384, "shards": 3, "replicas": 2, "event": "Collection created successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:08:01.512603Z"}
+{"event": "Collection created or exists: index_image (vector_size=384)", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:08:01.516842Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:08:01.550244Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:08:01.553394Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:08:23.783812Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+{"event": "Received upload: Dad.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:13.800827Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:13.835520Z"}
+{"caption": "This image captures three men, likely in a professional or industrial setting, given their attire.\n\nFrom left to right:\n1.  The man on the far left is wearing a dark suit jacket over a light-colored collared shirt and a patterned dark tie. He has dark hair, glasses, and is looking slightly to his right (our left) with a serious or thoughtful expression.\n2.  In the middle, a man is wearing a white hard hat and a blue vest with yellow reflective stripes over a light-colored shirt. The vest appears to have a logo or emblem on it. He has dark hair and a beard strap from his hard hat, and he is looking forward. His attire suggests he might be involved in construction, engineering, or a related field requiring safety gear.\n3.  On the right, a man is wearing a light-colored (possibly light blue or white) long-sleeved collared shirt. He has dark hair and is smiling or looking amused, glancing slightly to his left (our right). There appears to be a small dark logo on his shirt pocket.\n\nThe background is somewhat blurred, suggesting an indoor environment, possibly an office, a building under construction, or a large open space like an airport or convention center. The focus is clearly on the three individuals, with the man in the suit appearing to be in a leading or observing role, and the other two potentially staff or colleagues.", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:09:17.032145Z"}
+{"document_id": "b73bbc78-f770-4a50-a7a6-b5e1755325de", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp7lkj5hba.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:09:17.048558Z"}
+{"event": "Document processed: b73bbc78-f770-4a50-a7a6-b5e1755325de", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:17.053592Z"}
+{"event": "AI metadata extracted for document: b73bbc78-f770-4a50-a7a6-b5e1755325de", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:20.217770Z"}
+{"original_id": "b73bbc78-f770-4a50-a7a6-b5e1755325de", "num_chunks": 2, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-24T00:09:20.224777Z"}
+{"event": "Document chunked: 2 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:20.232776Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 2 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:09:20.414311Z"}
+{"event": "Gemini text embedding used for image document: b73bbc78-f770-4a50-a7a6-b5e1755325de", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:20.426851Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000052711}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:09:20.454313Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000052711}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-24T00:09:20.458485Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 2, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:09:20.473804Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:20.476506Z"}
+{"event": "Received upload: qr.png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:46.672374Z"}
+{"event": "Processing file type: .png", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:46.683804Z"}
+{"caption": "The image displays a **QR code**.\n\nIt is a black and white square pattern with the characteristic three large squares (finder patterns) in the corners (top-left, top-right, bottom-left) that help a scanner orient and read the code. The intricate pattern of smaller black and white modules encodes data.\n\nI cannot decode the information contained within this specific QR code without a scanning tool.", "event": "Gemini Vision caption generated for image", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:09:53.009536Z"}
+{"document_id": "8cb5633b-9ec3-40f7-8293-0de8dc0734c0", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpl5b_9w87.png", "event": "Image processed successfully", "logger": "ImageProcessor", "level": "info", "timestamp": "2025-06-24T00:09:53.018536Z"}
+{"event": "Document processed: 8cb5633b-9ec3-40f7-8293-0de8dc0734c0", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:53.022431Z"}
+{"event": "AI metadata extracted for document: 8cb5633b-9ec3-40f7-8293-0de8dc0734c0", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:54.949234Z"}
+{"original_id": "8cb5633b-9ec3-40f7-8293-0de8dc0734c0", "num_chunks": 1, "strategy": "fixed_size", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-24T00:09:54.957700Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:54.966710Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:09:55.150889Z"}
+{"event": "Gemini text embedding used for image document: 8cb5633b-9ec3-40f7-8293-0de8dc0734c0", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:55.166440Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00006781}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:09:55.192183Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.00006781}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-24T00:09:55.197878Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_image", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:09:55.223340Z"}
+{"event": "Vectors upserted to Qdrant: index_image", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:09:55.225980Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:10:33.016666Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:13:18.678787Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:13:54.319725Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:14:14.080259Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+{"event": "Received upload: PE-plan (1).pdf", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:14:37.748354Z"}
+{"event": "Processing file type: .pdf", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:14:37.755358Z"}
+{"document_id": "8b97938e-d040-496b-b731-78d32c40ad30", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmp6z9nswjr.pdf", "event": "Document processed successfully", "logger": "DocumentProcessor", "level": "info", "timestamp": "2025-06-24T00:14:37.798421Z"}
+{"event": "Document processed: 8b97938e-d040-496b-b731-78d32c40ad30", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:14:37.803423Z"}
+{"event": "No content extracted from document: 8b97938e-d040-496b-b731-78d32c40ad30", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-24T00:14:37.813965Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:14:37.819160Z"}
+{"event": "No chunk texts to embed for document: 8b97938e-d040-496b-b731-78d32c40ad30", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-24T00:14:37.822076Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:15:00.427226Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:16:35.767169Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:16:52.178578Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:16:53.303550Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:16:53.325795Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+{"collection_name": "index_document", "vector_size": 384, "shards": 3, "replicas": 2, "event": "Collection created successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:16:54.187525Z"}
+{"event": "Created default collection: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:16:54.190873Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000089603}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:16:54.203623Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+{"collection_name": "index_tabular", "vector_size": 384, "shards": 3, "replicas": 2, "event": "Collection created successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:16:55.061006Z"}
+{"event": "Created default collection: index_tabular", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:16:55.064199Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:16:55.067598Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:17:11.115395Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:17:11.660538Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:11.678690Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000072053}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:17:11.692510Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000052365}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:17:11.713539Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000045165}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:17:11.726043Z"}
+{"event": "Received upload: Project Topics.pdf", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:11.757838Z"}
+{"event": "Processing file type: .pdf", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:11.761460Z"}
+{"event": "Successfully extracted 1758 characters from PDF using PyMuPDF", "logger": "DocumentProcessor", "level": "info", "timestamp": "2025-06-24T00:17:11.792783Z"}
+{"document_id": "fef80d99-bdf0-42a0-9c31-af0afd8905ad", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpr9onchy5.pdf", "event": "Document processed successfully", "logger": "DocumentProcessor", "level": "info", "timestamp": "2025-06-24T00:17:11.797709Z"}
+{"event": "Document processed: fef80d99-bdf0-42a0-9c31-af0afd8905ad", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:11.803903Z"}
+{"event": "AI metadata extracted for document: fef80d99-bdf0-42a0-9c31-af0afd8905ad", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:17.070110Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"original_id": "fef80d99-bdf0-42a0-9c31-af0afd8905ad", "num_chunks": 1, "strategy": "semantic", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-24T00:17:21.896425Z"}
+{"event": "Document chunked: 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:21.900387Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:17:22.042826Z"}
+{"event": "Embeddings generated for 1 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:22.056669Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000053929}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:17:22.066238Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000053929}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-24T00:17:22.073815Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_document", "total_vectors": 1, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:17:22.109783Z"}
+{"event": "Vectors upserted to Qdrant: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:17:22.112416Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:18:26.185953Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:18:44.999914Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:18:45.944754Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:18:45.976318Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000088779}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:18:45.993226Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000072188}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:18:46.009655Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000071339}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:18:46.027570Z"}
+{"event": "Shutting down distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:18:46.032930Z"}
+{"event": "Gemini client initialized successfully", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:19:04.274373Z"}
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+{"host": "localhost", "port": 6333, "event": "Qdrant client initialized", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:19:04.809739Z"}
+{"event": "Starting distributed indexing system", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:19:04.827934Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000106826}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:19:04.858319Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_image "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_image` already exists!\"},\"time\":0.000057847}'", "collection_name": "index_image", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:19:04.886534Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_tabular "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_tabular` already exists!\"},\"time\":0.000057044}'", "collection_name": "index_tabular", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:19:04.915530Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:19:15.330801Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:19:47.560177Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"
+{"event": "Received upload: Lecture 2 - Distributed System Models.pdf", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:20:03.890442Z"}
+{"event": "Processing file type: .pdf", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:20:03.897403Z"}
+{"event": "Successfully extracted 38270 characters from PDF using PyMuPDF", "logger": "DocumentProcessor", "level": "info", "timestamp": "2025-06-24T00:20:03.997664Z"}
+{"document_id": "45b8e602-d3a4-45f5-a131-3da689d7b919", "file_path": "C:\\Users\\nhakh\\AppData\\Local\\Temp\\tmpvqgc80bd.pdf", "event": "Document processed successfully", "logger": "DocumentProcessor", "level": "info", "timestamp": "2025-06-24T00:20:04.010706Z"}
+{"event": "Document processed: 45b8e602-d3a4-45f5-a131-3da689d7b919", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:20:04.015175Z"}
+{"event": "AI metadata extracted for document: 45b8e602-d3a4-45f5-a131-3da689d7b919", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:20:07.687989Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"original_id": "45b8e602-d3a4-45f5-a131-3da689d7b919", "num_chunks": 35, "strategy": "semantic", "event": "Document chunked successfully", "logger": "TextChunker", "level": "info", "timestamp": "2025-06-24T00:20:12.195455Z"}
+{"event": "Document chunked: 35 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:20:12.198463Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 35 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:20:13.395359Z"}
+{"event": "Embeddings generated for 35 chunks", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:20:13.410535Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document "HTTP/1.1 409 Conflict"
+{"error": "Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000056385}'", "collection_name": "index_document", "event": "Collection creation failed", "logger": "QdrantClient", "level": "error", "timestamp": "2025-06-24T00:20:13.434863Z"}
+{"event": "Collection creation failed or already exists: Unexpected Response: 409 (Conflict)\nRaw response content:\nb'{\"status\":{\"error\":\"Wrong input: Collection `index_document` already exists!\"},\"time\":0.000056385}'", "logger": "src.api.main", "level": "warning", "timestamp": "2025-06-24T00:20:13.442867Z"}
+HTTP Request: PUT http://localhost:6333/collections/index_document/points?wait=true "HTTP/1.1 200 OK"
+{"collection_name": "index_document", "total_vectors": 35, "event": "Vectors upserted successfully", "logger": "QdrantClient", "level": "info", "timestamp": "2025-06-24T00:20:13.496128Z"}
+{"event": "Vectors upserted to Qdrant: index_document", "logger": "src.api.main", "level": "info", "timestamp": "2025-06-24T00:20:13.498724Z"}
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T00:20:58.278910Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_tabular/points/search "HTTP/1.1 200 OK"

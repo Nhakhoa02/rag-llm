@@ -51,6 +51,7 @@ class UploadResponse(BaseModel):
     message: str
     chunks_created: int
     metadata: Dict[str, Any]
+    content: str = ""
 
 class SearchRequest(BaseModel):
     query: str
@@ -121,6 +122,7 @@ async def upload_file(
         import tempfile
         import os
         
+        logger.info(f"Received upload: {file.filename}")
         # Parse metadata
         try:
             file_metadata = json.loads(metadata)
@@ -137,51 +139,81 @@ async def upload_file(
         try:
             # Process file based on type
             file_extension = os.path.splitext(filename)[1].lower()
-            
+            logger.info(f"Processing file type: {file_extension}")
             if file_extension in ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp']:
                 document = image_processor.process_image(temp_file_path, file_metadata)
             elif file_extension in ['.csv', '.xlsx', '.xls', '.parquet', '.json']:
                 document = tabular_processor.process_tabular(temp_file_path, file_metadata)
             else:
                 document = document_processor.process_document(temp_file_path, file_metadata)
+            logger.info(f"Document processed: {document.id}")
             
             # Extract additional metadata using Gemini
             if document.content:
-                ai_metadata = await gemini_client.extract_metadata(
-                    document.content, 
-                    document.type.value
-                )
-                document.metadata.update(ai_metadata)
+                try:
+                    ai_metadata = await gemini_client.extract_metadata(
+                        document.content, 
+                        document.type.value
+                    )
+                    document.metadata.update(ai_metadata)
+                    logger.info(f"AI metadata extracted for document: {document.id}")
+                except Exception as e:
+                    logger.error(f"AI metadata extraction failed: {e}")
+            else:
+                logger.warning(f"No content extracted from document: {document.id}")
             
             # Chunk document if needed
             chunked_docs = text_chunker.chunk_document(document, chunk_strategy)
+            logger.info(f"Document chunked: {len(chunked_docs)} chunks")
             
             # Generate embeddings for chunks
             chunk_texts = [doc.content for doc in chunked_docs if doc.content]
-            if chunk_texts:
-                embeddings = await gemini_client.generate_embeddings(chunk_texts)
-                
+            embeddings = []
+            if document.type.value == "image":
+                # Use Gemini text embedding for image caption
+                if chunk_texts:
+                    try:
+                        embeddings = await gemini_client.generate_embeddings(chunk_texts)
+                        logger.info(f"Gemini text embedding used for image document: {document.id}")
+                    except Exception as e:
+                        logger.error(f"Image embedding generation failed: {e}")
+                        raise HTTPException(status_code=500, detail=f"Image embedding generation failed: {e}")
+                else:
+                    logger.warning(f"No caption content to embed for image document: {document.id}")
+            elif chunk_texts:
+                try:
+                    embeddings = await gemini_client.generate_embeddings(chunk_texts)
+                    logger.info(f"Embeddings generated for {len(chunk_texts)} chunks")
+                except Exception as e:
+                    logger.error(f"Embedding generation failed: {e}")
+                    raise HTTPException(status_code=500, detail=f"Embedding generation failed: {e}")
+            else:
+                logger.warning(f"No chunk texts to embed for document: {document.id}")
+
+            if embeddings:
                 # Store in Qdrant
                 collection_name = f"index_{document.type.value}"
-                
-                # Create collection if it doesn't exist
+                vector_size = 384  # Use 384 for sentence-transformers embeddings
                 try:
                     await qdrant_client.create_collection(
                         collection_name=collection_name,
-                        vector_size=len(embeddings[0]) if embeddings else 768,
+                        vector_size=vector_size,
                         shard_number=3,  # Distribute across 3 shards
                         replication_factor=2  # 2 replicas for fault tolerance
                     )
-                except Exception:
-                    # Collection might already exist
-                    pass
-                
-                # Upsert vectors
-                await qdrant_client.upsert_vectors(
-                    collection_name=collection_name,
-                    vectors=embeddings,
-                    documents=chunked_docs
-                )
+                    logger.info(f"Collection created or exists: {collection_name} (vector_size={vector_size})")
+                except Exception as e:
+                    logger.warning(f"Collection creation failed or already exists: {e}")
+                try:
+                    await qdrant_client.upsert_vectors(
+                        collection_name=collection_name,
+                        vectors=embeddings,
+                        documents=chunked_docs
+                    )
+                    logger.info(f"Vectors upserted to Qdrant: {collection_name}")
+                except Exception as e:
+                    logger.error(f"Qdrant upsert failed: {e}")
+                    raise HTTPException(status_code=500, detail=f"Qdrant upsert failed: {e}")
             
             # Clean up temporary file
             os.unlink(temp_file_path)
@@ -191,8 +223,9 @@ async def upload_file(
                 status="success",
                 message="File processed and indexed successfully",
                 chunks_created=len(chunked_docs),
-                metadata=document.metadata
-            )
+                metadata=document.metadata,
+                content=document.content or ""
+            ), {"content": document.content}
             
         finally:
             # Clean up temporary file
@@ -319,7 +352,7 @@ async def get_indexes():
             index_info = IndexInfo(
                 name=col["name"],
                 type="vector",
-                size=col.get("vectors_count", 0),
+                size=col.get("vectors_count") or 0,
                 description=f"Vector index for {col['name']}",
                 status=col.get("status", "unknown")
             )
@@ -354,7 +387,7 @@ async def startup_event():
             try:
                 await qdrant_client.create_collection(
                     collection_name=collection_name,
-                    vector_size=768,
+                    vector_size=384,  # Use 384 for sentence-transformers embeddings
                     shard_number=3,
                     replication_factor=2
                 )
@@ -388,6 +421,19 @@ async def list_documents(
     except Exception as e:
         logger.error("Failed to list documents", error=str(e))
         raise HTTPException(status_code=500, detail=f"Failed to list documents: {str(e)}")
+
+@app.delete("/delete_index")
+async def delete_index(collection: str = Query(..., description="Collection name to delete")):
+    """
+    Delete a Qdrant collection (index) by name.
+    """
+    try:
+        await qdrant_client.delete_collection(collection)
+        logger.info(f"Collection deleted: {collection}")
+        return {"status": "ok", "message": f"Collection '{collection}' deleted."}
+    except Exception as e:
+        logger.error(f"Failed to delete collection {collection}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete collection: {e}")
 
 if __name__ == "__main__":
     uvicorn.run(

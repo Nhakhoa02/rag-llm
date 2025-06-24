@@ -8,13 +8,12 @@ from typing import List, Dict, Any, Optional, Union
 from pathlib import Path
 import pandas as pd
 from PIL import Image
-import fitz  # PyMuPDF
+import fitz  # PyMuPDF. Ensure you have only 'PyMuPDF' installed, not the unrelated 'fitz' package from PyPI.
 from docx import Document as DocxDocument
 import json
 import xml.etree.ElementTree as ET
 from pypdf import PdfReader
-import cv2
-import numpy as np
+import google.generativeai as genai
 
 from ..models.base import BaseDocument, DataType, ProcessingStatus
 from ..utils.logging import LoggerMixin
@@ -96,24 +95,54 @@ class DocumentProcessor(LoggerMixin):
         """Extract text from PDF file."""
         try:
             # Try PyMuPDF first (better text extraction)
-            doc = fitz.open(file_path)
+            doc = fitz.open(str(file_path))
             text = ""
-            for page in doc:
-                text += page.get_text()
+            for page_num in range(len(doc)):
+                page = doc[page_num]
+                page_text = page.get_text()
+                if page_text:
+                    text += page_text + "\n"
+                else:
+                    self.logger.warning(f"No text extracted from page {page_num + 1}")
             doc.close()
-            return text.strip()
-        except Exception:
-            # Fallback to PyPDF
-            with open(file_path, 'rb') as file:
-                reader = PdfReader(file)
-                text = ""
-                for page in reader.pages:
-                    text += page.extract_text()
-                return text.strip()
+            
+            text = text.strip()
+            if not text:
+                self.logger.warning("No text extracted from PDF using PyMuPDF, trying PyPDF fallback")
+                raise Exception("No text extracted")
+            
+            self.logger.info(f"Successfully extracted {len(text)} characters from PDF using PyMuPDF")
+            return text
+            
+        except Exception as e:
+            self.logger.warning(f"PyMuPDF failed: {e}, trying PyPDF fallback")
+            try:
+                # Fallback to PyPDF
+                with open(file_path, 'rb') as file:
+                    reader = PdfReader(file)
+                    text = ""
+                    for page_num, page in enumerate(reader.pages):
+                        page_text = page.extract_text()
+                        if page_text:
+                            text += page_text + "\n"
+                        else:
+                            self.logger.warning(f"No text extracted from page {page_num + 1} using PyPDF")
+                    
+                    text = text.strip()
+                    if not text:
+                        self.logger.error("No text could be extracted from PDF using either method")
+                        return "PDF document (no text content extracted)"
+                    
+                    self.logger.info(f"Successfully extracted {len(text)} characters from PDF using PyPDF")
+                    return text
+                    
+            except Exception as fallback_error:
+                self.logger.error(f"Both PDF extraction methods failed: {fallback_error}")
+                return "PDF document (text extraction failed)"
     
     def _process_docx(self, file_path: Path) -> str:
         """Extract text from DOCX file."""
-        doc = DocxDocument(file_path)
+        doc = DocxDocument(str(file_path))
         text = ""
         for paragraph in doc.paragraphs:
             text += paragraph.text + "\n"
@@ -155,84 +184,63 @@ class ImageProcessor(LoggerMixin):
         self.supported_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'}
     
     @monitor_function("image_processor", "process_image", "image")
-    def process_image(self, file_path: Union[str, Path], 
-                     metadata: Optional[Dict[str, Any]] = None) -> BaseDocument:
+    def process_image(self, file_path: Union[str, Path], metadata: Optional[Dict[str, Any]] = None) -> BaseDocument:
         """
-        Process an image and extract text and features.
-        
-        Args:
-            file_path: Path to the image file
-            metadata: Additional metadata for the image
-            
-        Returns:
-            BaseDocument object with processed content
+        Process an image and generate a caption using Gemini 2.5 Flash.
         """
         try:
             file_path = Path(file_path)
-            
-            # Validate file
             extension = file_path.suffix.lower()
-            if extension not in self.supported_extensions:
-                raise ValueError(f"Unsupported image format: {extension}")
-            
-            # Load image
-            image = Image.open(file_path)
-            
-            # Extract text using OCR (if available)
-            text_content = self._extract_text_from_image(image)
-            
-            # Extract image features
+            image = Image.open(file_path).convert("RGB")
+            # Use Gemini Vision for caption
+            caption = self.get_gemini_image_caption(str(file_path))
+            self.logger.info("Gemini Vision caption generated for image", caption=caption)
             features = self._extract_image_features(image)
-            
-            # Create document object
             doc = BaseDocument(
                 type=DataType.IMAGE,
-                content=text_content,
+                content=caption,
                 metadata=metadata or {}
             )
-            
-            # Add image metadata
             doc.update_metadata("file_path", str(file_path))
             doc.update_metadata("image_size", image.size)
             doc.update_metadata("image_mode", image.mode)
             doc.update_metadata("image_format", image.format)
             doc.update_metadata("image_features", features)
             doc.update_metadata("file_hash", data_validator.calculate_file_hash(file_path))
-            
             doc.status = ProcessingStatus.COMPLETED
             self.logger.info("Image processed successfully", document_id=doc.id, file_path=str(file_path))
-            
             return doc
-            
         except Exception as e:
             self.logger.error("Image processing failed", error=str(e), file_path=str(file_path))
             raise
-    
-    def _extract_text_from_image(self, image: Image.Image) -> str:
-        """Extract text from image using OCR."""
-        try:
-            import pytesseract
-            # Convert to RGB if necessary
-            if image.mode != 'RGB':
-                image = image.convert('RGB')
-            
-            # Extract text
-            text = pytesseract.image_to_string(image)
-            return text.strip()
-        except ImportError:
-            self.logger.warning("pytesseract not available, skipping OCR")
-            return ""
-        except Exception as e:
-            self.logger.warning("OCR failed", error=str(e))
-            return ""
-    
+
+    def get_gemini_image_caption(self, image_path: str) -> str:
+        model = genai.GenerativeModel('gemini-2.5-flash')
+        image = Image.open(image_path).convert("RGB")
+        response = model.generate_content([image], stream=False)
+        
+        # Extract text from response parts
+        if hasattr(response, "parts") and response.parts:
+            text_parts = []
+            for part in response.parts:
+                if hasattr(part, "text") and part.text:
+                    text_parts.append(part.text)
+            return " ".join(text_parts)
+        
+        # Fallback to candidates if parts don't work
+        if hasattr(response, "candidates") and response.candidates:
+            text_parts = []
+            for candidate in response.candidates:
+                if hasattr(candidate, "content") and hasattr(candidate.content, "parts"):
+                    for part in candidate.content.parts:
+                        if hasattr(part, "text") and part.text:
+                            text_parts.append(part.text)
+            return " ".join(text_parts)
+        
+        return ""
+
     def _extract_image_features(self, image: Image.Image) -> Dict[str, Any]:
-        """Extract basic image features."""
         try:
-            # Convert to numpy array for OpenCV processing
-            img_array = np.array(image)
-            
-            # Basic features
             features = {
                 "width": image.width,
                 "height": image.height,
@@ -240,25 +248,7 @@ class ImageProcessor(LoggerMixin):
                 "mode": image.mode,
                 "format": image.format,
             }
-            
-            # Color features (if RGB)
-            if image.mode == 'RGB':
-                img_cv = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
-                
-                # Color histogram
-                hist = cv2.calcHist([img_cv], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
-                hist = cv2.normalize(hist, hist).flatten()
-                features["color_histogram"] = hist.tolist()
-                
-                # Dominant colors
-                pixels = img_cv.reshape(-1, 3)
-                from sklearn.cluster import KMeans
-                kmeans = KMeans(n_clusters=5, random_state=42)
-                kmeans.fit(pixels)
-                features["dominant_colors"] = kmeans.cluster_centers_.tolist()
-            
             return features
-            
         except Exception as e:
             self.logger.warning("Feature extraction failed", error=str(e))
             return {"width": image.width, "height": image.height, "mode": image.mode}
@@ -352,7 +342,7 @@ class TabularProcessor(LoggerMixin):
         }
         
         # Add statistical information for numeric columns
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        numeric_cols = df.select_dtypes(include=['number']).columns
         if len(numeric_cols) > 0:
             info["numeric_stats"] = df[numeric_cols].describe().to_dict()
         
