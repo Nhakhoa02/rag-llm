@@ -154,7 +154,12 @@ class GeminiClient(LoggerMixin):
             - If query mentions images, photos, pictures, or visual content, include index_image
             - If query mentions documents, text, PDFs, or written content, include index_document  
             - If query mentions data, tables, spreadsheets, or numerical content, include index_tabular
+            - Look for specialized collections that match the query topic (e.g., index_technology, index_finance, index_business)
+            - Consider content formats (e.g., index_reports, index_manuals, index_research)
+            - Consider languages (e.g., index_english, index_spanish)
+            - Consider sentiment (e.g., index_positive, index_negative)
             - Always include at least 2-3 indexes unless the query is very specific
+            - If no exact matches, suggest the most relevant available indexes
             """
             
             # Generate analysis

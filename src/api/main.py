@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 from pydantic import BaseModel
 import requests
+import json
 
 from ..config import settings
 from ..utils.logging import get_logger
@@ -18,6 +19,7 @@ from ..ingestion.processor import DocumentProcessor, ImageProcessor, TabularProc
 from ..ingestion.chunker import TextChunker
 from ..ai.gemini_client import GeminiClient, extract_gemini_text
 from ..storage.qdrant_client import QdrantClient
+from ..models.base import BaseDocument
 
 # Initialize components
 logger = get_logger(__name__)
@@ -27,6 +29,71 @@ tabular_processor = TabularProcessor()
 text_chunker = TextChunker()
 gemini_client = GeminiClient()
 qdrant_client = QdrantClient()
+
+async def determine_collections(document: BaseDocument, ai_metadata: Dict[str, Any]) -> List[str]:
+    """
+    Use AI to determine which collections this document should be stored in.
+    Creates specialized collections based on content analysis.
+    """
+    try:
+        # Base collections based on document type
+        base_collections = [f"index_{document.type.value}"]
+        
+        # Analyze content for specialized collections
+        content_preview = document.content[:1000] if document.content else "No content available"
+        content_analysis_prompt = f"""
+        Analyze this content and determine which specialized collections it should be stored in.
+        
+        Content Type: {document.type.value}
+        Content Preview: {content_preview}...
+        
+        Available metadata: {ai_metadata}
+        
+        Consider creating specialized collections for:
+        - Content topics (e.g., index_technology, index_finance, index_healthcare)
+        - Content formats (e.g., index_reports, index_manuals, index_research)
+        - Content domains (e.g., index_business, index_academic, index_creative)
+        - Content languages (e.g., index_english, index_spanish, index_french)
+        - Content sentiment (e.g., index_positive, index_negative, index_neutral)
+        
+        Return a JSON list of collection names (without 'index_' prefix):
+        ["technology", "reports", "business", "english"]
+        
+        Guidelines:
+        - Create 2-4 specialized collections
+        - Use descriptive, lowercase names
+        - Consider the main topics and characteristics
+        - Don't include the base collection (already handled)
+        """
+        
+        response = await gemini_client.generate_text(content_analysis_prompt, temperature=0.3)
+        response_text = extract_gemini_text(response)
+        
+        # Parse the response
+        try:
+            if "[" in response_text and "]" in response_text:
+                start = response_text.find("[")
+                end = response_text.rfind("]") + 1
+                json_str = response_text[start:end]
+                specialized_collections = json.loads(json_str)
+                
+                # Add 'index_' prefix to specialized collections
+                specialized_collections = [f"index_{col}" for col in specialized_collections if isinstance(col, str)]
+                
+                # Combine base and specialized collections
+                all_collections = base_collections + specialized_collections
+                logger.info(f"AI determined collections: {all_collections}")
+                return all_collections
+                
+        except (json.JSONDecodeError, KeyError) as e:
+            logger.warning(f"Failed to parse collection analysis: {e}")
+        
+        # Fallback to base collection
+        return base_collections
+        
+    except Exception as e:
+        logger.error(f"Collection determination failed: {e}")
+        return [f"index_{document.type.value}"]
 
 # Create FastAPI app
 app = FastAPI(
@@ -133,7 +200,6 @@ async def upload_file(
     5. Distributed storage in Qdrant
     """
     try:
-        import json
         import tempfile
         import os
         
@@ -164,6 +230,7 @@ async def upload_file(
             logger.info(f"Document processed: {document.id}")
             
             # Extract additional metadata using Gemini
+            ai_metadata = {}  # Initialize to empty dict
             if document.content:
                 try:
                     ai_metadata = await gemini_client.extract_metadata(
@@ -174,6 +241,7 @@ async def upload_file(
                     logger.info(f"AI metadata extracted for document: {document.id}")
                 except Exception as e:
                     logger.error(f"AI metadata extraction failed: {e}")
+                    # Keep ai_metadata as empty dict
             else:
                 logger.warning(f"No content extracted from document: {document.id}")
             
@@ -206,41 +274,68 @@ async def upload_file(
                 logger.warning(f"No chunk texts to embed for document: {document.id}")
 
             if embeddings:
-                # Store in Qdrant
-                collection_name = f"index_{document.type.value}"
+                # Determine collection names using AI analysis
+                collection_names = await determine_collections(document, ai_metadata)
+                logger.info(f"AI determined collections: {collection_names}")
+                
+                # Store in multiple collections for better search coverage
                 vector_size = 384  # Use 384 for sentence-transformers embeddings
-                try:
+                stored_collections = []
+                
+                for collection_name in collection_names:
+                    try:
+                        # Create collection if it doesn't exist
+                        await qdrant_client.create_collection(
+                            collection_name=collection_name,
+                            vector_size=vector_size,
+                            shard_number=3,
+                            replication_factor=2
+                        )
+                        logger.info(f"Collection created or exists: {collection_name}")
+                        
+                        # Store embeddings in this collection
+                        await qdrant_client.upsert_vectors(
+                            collection_name=collection_name,
+                            vectors=embeddings,
+                            documents=chunked_docs
+                        )
+                        stored_collections.append(collection_name)
+                        logger.info(f"Document stored in collection: {collection_name}")
+                        
+                    except Exception as e:
+                        logger.warning(f"Failed to store in collection {collection_name}: {e}")
+                        continue
+                
+                if not stored_collections:
+                    # Fallback to default collection
+                    default_collection = f"index_{document.type.value}"
                     await qdrant_client.create_collection(
-                        collection_name=collection_name,
+                        collection_name=default_collection,
                         vector_size=vector_size,
-                        shard_number=3,  # Distribute across 3 shards
-                        replication_factor=2  # 2 replicas for fault tolerance
+                        shard_number=3,
+                        replication_factor=2
                     )
-                    logger.info(f"Collection created or exists: {collection_name} (vector_size={vector_size})")
-                except Exception as e:
-                    logger.warning(f"Collection creation failed or already exists: {e}")
-                try:
                     await qdrant_client.upsert_vectors(
-                        collection_name=collection_name,
+                        collection_name=default_collection,
                         vectors=embeddings,
                         documents=chunked_docs
                     )
-                    logger.info(f"Vectors upserted to Qdrant: {collection_name}")
-                except Exception as e:
-                    logger.error(f"Qdrant upsert failed: {e}")
-                    raise HTTPException(status_code=500, detail=f"Qdrant upsert failed: {e}")
-            
-            # Clean up temporary file
-            os.unlink(temp_file_path)
-            
-            return UploadResponse(
-                document_id=document.id,
-                status="success",
-                message="File processed and indexed successfully",
-                chunks_created=len(chunked_docs),
-                metadata=document.metadata,
-                content=document.content or ""
-            ), {"content": document.content}
+                    stored_collections = [default_collection]
+                    logger.info(f"Fallback to default collection: {default_collection}")
+                
+                # Clean up temporary file
+                os.unlink(temp_file_path)
+                
+                return UploadResponse(
+                    document_id=document.id,
+                    status="success",
+                    message=f"Document processed and stored in {len(stored_collections)} collections",
+                    chunks_created=len(chunked_docs),
+                    metadata=document.metadata,
+                    content=document.content[:500] + "..." if len(document.content) > 500 else document.content
+                )
+            else:
+                raise HTTPException(status_code=500, detail="No embeddings generated")
             
         finally:
             # Clean up temporary file
@@ -299,8 +394,10 @@ async def search_documents(request: SearchRequest):
         
         # Search across selected indexes in parallel
         search_tasks = []
+        available_collection_names = [col["name"] for col in collections]
+        
         for index_name in selected_indexes:
-            if index_name in [col["name"] for col in collections]:
+            if index_name in available_collection_names:
                 task = qdrant_client.search_vectors(
                     collection_name=index_name,
                     query_vector=query_embedding[0],
@@ -308,6 +405,21 @@ async def search_documents(request: SearchRequest):
                     score_threshold=request.score_threshold
                 )
                 search_tasks.append((index_name, task))
+            else:
+                logger.warning(f"Requested collection '{index_name}' does not exist, skipping")
+        
+        # If no valid collections found, try to find similar ones
+        if not search_tasks and selected_indexes:
+            logger.info("No requested collections found, searching in available collections")
+            # Search in all available collections as fallback
+            for col in collections:
+                task = qdrant_client.search_vectors(
+                    collection_name=col["name"],
+                    query_vector=query_embedding[0],
+                    limit=request.limit,
+                    score_threshold=request.score_threshold
+                )
+                search_tasks.append((col["name"], task))
         
         # Execute searches in parallel
         search_results = []
@@ -439,7 +551,6 @@ async def ask_question(request: AskRequest):
             answer_response = await gemini_client.generate_text(answer_prompt, temperature=0.3)
             
             # Parse the answer
-            import json
             try:
                 answer_text = extract_gemini_text(answer_response)
                 # Extract JSON from response
@@ -702,8 +813,6 @@ async def search_by_metadata(
     Example metadata_filter: '{"file_path": {"$contains": "pdf"}}'
     """
     try:
-        import json
-        
         # Parse metadata filter
         try:
             filter_data = json.loads(metadata_filter)
