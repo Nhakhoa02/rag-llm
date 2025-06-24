@@ -2361,3 +2361,53 @@ HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 
 HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
 HTTP Request: GET http://localhost:6333/collections/index_reports "HTTP/1.1 200 OK"
 HTTP Request: GET http://localhost:6333/collections/index_reports "HTTP/1.1 200 OK"
+{"event": "JSON parsing failed: No JSON found in response, using fallback analysis", "logger": "GeminiClient", "level": "warning", "timestamp": "2025-06-24T01:03:08.604643Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T01:03:08.712804Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_academic/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_english/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_academic "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_academic "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_english "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_english "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_technology "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_technology "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_reports "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_reports "HTTP/1.1 200 OK"
+{"event": "JSON parsing failed: No JSON found in response, using fallback analysis", "logger": "GeminiClient", "level": "warning", "timestamp": "2025-06-24T01:03:22.833940Z"}
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T01:03:22.925674Z"}
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_academic/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_english/points/search "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_document "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_academic "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_academic "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_english "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_english "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_technology "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_technology "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_image "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_tabular "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_reports "HTTP/1.1 200 OK"
+HTTP Request: GET http://localhost:6333/collections/index_reports "HTTP/1.1 200 OK"
+Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+Use pytorch device: cpu
+{"event": "Generated 1 embeddings using sentence-transformers", "logger": "GeminiClient", "level": "info", "timestamp": "2025-06-24T01:03:47.229585Z"}
+HTTP Request: POST http://localhost:6333/collections/index_image/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_document/points/search "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/index_english/points/search "HTTP/1.1 200 OK"
