@@ -130,30 +130,34 @@ class TextChunker(LoggerMixin):
         """Chunk text by paragraphs."""
         # Split by double newlines (paragraphs)
         paragraphs = re.split(r'\n\s*\n', text)
+        return [p.strip() for p in paragraphs if p.strip()]
+        # """Chunk text by paragraphs."""
+        # # Split by double newlines (paragraphs)
+        # paragraphs = re.split(r'\n\s*\n', text)
         
-        chunks = []
-        current_chunk = ""
+        # chunks = []
+        # current_chunk = ""
         
-        for paragraph in paragraphs:
-            paragraph = paragraph.strip()
-            if not paragraph:
-                continue
+        # for paragraph in paragraphs:
+        #     paragraph = paragraph.strip()
+        #     if not paragraph:
+        #         continue
             
-            # If adding this paragraph would exceed chunk size, start new chunk
-            if len(current_chunk) + len(paragraph) > self.chunk_size and current_chunk:
-                chunks.append(current_chunk.strip())
-                current_chunk = paragraph
-            else:
-                if current_chunk:
-                    current_chunk += "\n\n" + paragraph
-                else:
-                    current_chunk = paragraph
+        #     # If adding this paragraph would exceed chunk size, start new chunk
+        #     if len(current_chunk) + len(paragraph) > self.chunk_size and current_chunk:
+        #         chunks.append(current_chunk.strip())
+        #         current_chunk = paragraph
+        #     else:
+        #         if current_chunk:
+        #             current_chunk += "\n\n" + paragraph
+        #         else:
+        #             current_chunk = paragraph
         
-        # Add the last chunk
-        if current_chunk:
-            chunks.append(current_chunk.strip())
+        # # Add the last chunk
+        # if current_chunk:
+        #     chunks.append(current_chunk.strip())
         
-        return chunks if chunks else [text]
+        # return chunks if chunks else [text]
     
     def _split_into_sentences(self, text: str) -> List[str]:
         """Split text into sentences."""
@@ -179,7 +183,7 @@ class TextChunker(LoggerMixin):
         # Auto-select strategy based on document type
         if strategy == "auto":
             if document.type == DataType.DOCUMENT:
-                strategy = "semantic"
+                strategy = "paragraph"#semantic
             elif document.type == DataType.TABULAR:
                 strategy = "paragraph"
             else:
