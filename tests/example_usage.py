@@ -14,15 +14,22 @@ import asyncio
 import json
 import tempfile
 import os
+import sys
 from pathlib import Path
 from typing import List, Dict, Any
 
+# Add the project root to the Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
 # Import our system components
-from src.ingestion.processor import DocumentProcessor, ImageProcessor, TabularProcessor
-from src.ingestion.chunker import TextChunker
-from src.ai.gemini_client import GeminiClient
-from src.storage.qdrant_client import QdrantClient
-from src.utils.logging import setup_logging, get_logger
+from core.types.document_processor import DocumentProcessor
+from core.types.image_processor import ImageProcessor
+from core.types.tabular_processor import TabularProcessor
+from core.services.ingestion.chunker import TextChunker
+from core.services.inference.gemini_client import GeminiClient
+from data.storage.qdrant_client import QdrantClient
+from core.utils.logging import setup_logging, get_logger
 
 
 class DistributedIndexingExample:

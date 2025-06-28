@@ -1,0 +1,52 @@
+rag-llm/
+├── core/                           # Core application layer
+│   ├── types/                      # File type processors
+│   │   ├── document_processor.py
+│   │   ├── image_processor.py
+│   │   └── tabular_processor.py
+│   ├── services/                   # Business logic services
+│   │   ├── ingestion/              # Data ingestion services
+│   │   │   ├── chunker.py
+│   │   │   └── pipeline.py
+│   │   └── inference/              # AI inference services (future)
+│   │       └── gemini_client.py
+│   ├── api/                        # API layer
+│   │   └── main.py
+│   ├── models/                     # Data models
+│   │   ├── base.py
+│   │   ├── document.py
+│   │   ├── csv_index.py
+│   │   └── ...
+│   └── utils/                      # Utilities
+│       ├── logging.py
+│       ├── validation.py
+│       └── encryption.py
+├── data/                           # Data layer
+│   ├── storage/                    # Storage services
+│   │   ├── distributed_storage_manager.py
+│   │   ├── csv_database.py
+│   │   ├── auto_scaler.py
+│   │   └── ...
+│   └── data/                       # Actual data storage
+│       ├── csv_databases/          # CSV SQLite databases
+│       ├── images/                 # Image files
+│       ├── documents/              # Document files
+│       ├── node_data/              # Distributed node data
+│       └── logs/                   # Application logs
+├── scripts/                        # Startup scripts
+│   ├── start_node1.py
+│   ├── start_node2.py
+│   ├── start_node3.py
+│   └── start_vector_nodes.py
+├── demos/                          # Demo files
+│   ├── demo_autoscaling.py
+│   └── demo_distributed_system.py
+├── tests/                          # Test files
+├── docs/                           # Documentation
+├── config/                         # Configuration
+│   ├── env.example
+│   ├── docker-compose.yml
+│   └── config.py
+├── README.md
+├── requirements.txt
+└── setup.py

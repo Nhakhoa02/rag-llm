@@ -60,12 +60,15 @@ def check_dependencies():
 
 def validate_environment():
     """Validate environment configuration."""
-    from src.config import validate_environment, print_configuration
-    
-    print("\n🔧 Checking configuration...")
-    print_configuration()
-    
-    return validate_environment()
+    # Validate environment before setup
+    try:
+        from config.config import validate_environment, print_configuration
+        validate_environment()
+        print_configuration()
+    except ImportError as e:
+        print(f"Warning: Could not import config validation: {e}")
+    except Exception as e:
+        print(f"Warning: Environment validation failed: {e}")
 
 
 def main():
@@ -100,7 +103,7 @@ def main():
     print("1. Edit .env file and set your GEMINI_API_KEY")
     print("2. Start Qdrant: docker run -p 6333:6333 qdrant/qdrant")
     print("3. Run tests: python test_system.py")
-    print("4. Start API: python -m src.api.main")
+    print("4. Start API: uvicorn core.api.main:app --reload")
     print("5. Run demo: python example_usage.py")
     
     print("\n🔗 Useful links:")

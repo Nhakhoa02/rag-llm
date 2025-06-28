@@ -19,7 +19,6 @@ from ..models.base import BaseDocument, DataType, ProcessingStatus
 from ..models.csv_index import CSVIndex, CSVIndexDocument
 from ..utils.logging import LoggerMixin
 from ..utils.validation import data_validator
-from ..utils.metrics import monitor_function
 
 
 class DocumentProcessor(LoggerMixin):
@@ -37,7 +36,6 @@ class DocumentProcessor(LoggerMixin):
             '.xlsx': self._process_excel,
         }
     
-    @monitor_function("document_processor", "process_document", "document")
     def process_document(self, file_path: Union[str, Path], 
                         metadata: Optional[Dict[str, Any]] = None) -> BaseDocument:
         """
@@ -184,7 +182,6 @@ class ImageProcessor(LoggerMixin):
         super().__init__()
         self.supported_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'}
     
-    @monitor_function("image_processor", "process_image", "image")
     def process_image(self, file_path: Union[str, Path], metadata: Optional[Dict[str, Any]] = None) -> BaseDocument:
         """
         Process an image and generate a caption using Gemini 2.5 Flash.
@@ -285,7 +282,6 @@ class TabularProcessor(LoggerMixin):
         super().__init__()
         self.supported_extensions = {'.csv', '.xlsx', '.xls', '.parquet', '.json'}
     
-    @monitor_function("tabular_processor", "process_tabular", "tabular")
     def process_tabular(self, file_path: Union[str, Path], 
                        metadata: Optional[Dict[str, Any]] = None) -> BaseDocument:
         """
