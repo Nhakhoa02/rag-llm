@@ -549,13 +549,219 @@ async def ask_question(request: AskRequest):
     Ask a question and get an AI-generated answer based on indexed content.
     
     This endpoint:
-    1. Searches for relevant content across indexes
-    2. Uses Gemini AI to generate a comprehensive answer
-    3. Provides reasoning and confidence scores
-    4. Includes source documents for transparency
+    1. Searches for relevant CSV content using CSV-specific logic
+    2. Searches for relevant content across other document types
+    3. Combines all findings to generate a comprehensive answer
+    4. Uses Gemini AI to generate a comprehensive answer
+    5. Provides reasoning and confidence scores
+    6. Includes source documents for transparency
     """
     try:
-        # First, perform a search to find relevant content
+        csv_results = None
+        csv_answer = None
+        csv_confidence = 0.0
+        csv_reasoning = {}
+        csv_sources = []
+        
+        # Step 1: Check for CSV-specific content
+        csv_index_collection = "csv_indexes"
+        if await storage_manager.index_exists(csv_index_collection):
+            try:
+                # Search for relevant CSV indexes
+                csv_search_results = await storage_manager.search_documents(
+                    index_name=csv_index_collection,
+                    query=request.question,
+                    limit=5,  # Get top 5 most relevant CSV files
+                    score_threshold=request.score_threshold
+                )
+                
+                if csv_search_results:
+                    # Extract CSV index information from search results
+                    relevant_csvs = []
+                    csv_indexes = []
+                    
+                    for result in csv_search_results:
+                        try:
+                            # Extract CSV index data from metadata
+                            metadata = result.get("metadata", {})
+                            csv_filename = metadata.get("csv_filename", "unknown")
+                            column_headers_raw = metadata.get("column_headers", "[]")
+                            total_rows = metadata.get("total_rows", 0)
+                            total_columns = metadata.get("total_columns", 0)
+                            csv_file_id = metadata.get("csv_file_id", result.get("document_id", ""))
+                            
+                            # Parse column_headers from JSON string
+                            try:
+                                if isinstance(column_headers_raw, str):
+                                    column_headers = json.loads(column_headers_raw)
+                                else:
+                                    column_headers = column_headers_raw or []
+                            except json.JSONDecodeError:
+                                column_headers = []
+                            
+                            relevant_csvs.append({
+                                "filename": csv_filename,
+                                "score": result.get("score", 0.0),
+                                "column_headers": column_headers,
+                                "total_rows": total_rows,
+                                "total_columns": total_columns,
+                                "document_id": result.get("document_id", ""),
+                                "csv_file_id": csv_file_id
+                            })
+                            
+                            # Create CSV index object for reasoning
+                            csv_index = CSVIndex(
+                                csv_file_id=csv_file_id,
+                                csv_filename=csv_filename,
+                                column_headers=column_headers,
+                                total_rows=total_rows,
+                                total_columns=total_columns,
+                                sample_data=None,  # We don't have sample data from search results
+                                inferred_types=None  # We don't have inferred types from search results
+                            )
+                            csv_indexes.append(csv_index)
+                            
+                        except Exception as e:
+                            logger.warning(f"Error processing CSV search result: {e}")
+                            continue
+                    
+                    # Use AI to analyze the question and generate SQL/answer for CSV
+                    csv_context = "\n\n".join([
+                        f"CSV: {csv.csv_filename}\nColumns: {', '.join(csv.column_headers)}\nRows: {csv.total_rows}"
+                        for csv in csv_indexes
+                    ])
+                    
+                    reasoning_prompt = f"""
+                    You are a data analyst with access to CSV files. The user has asked: "{request.question}"
+                    
+                    Available CSV Files:
+                    {csv_context}
+                    
+                    Your task is to:
+                    1. Identify which CSV file(s) contain the data needed to answer the question
+                    2. Generate appropriate SQL queries to extract the required data
+                    3. Execute the SQL queries to get actual results
+                    4. Provide a clear answer based on the real data, not just the structure
+                    
+                    Focus on getting actual data values, not just describing what data would be needed.
+                    """
+                    
+                    try:
+                        response = await gemini_client.generate_text(reasoning_prompt, temperature=0.3)
+                        csv_answer = extract_gemini_text(response)
+                        
+                        # Try to generate and execute SQL queries for the most relevant CSV
+                        sql_results = []
+                        
+                        if relevant_csvs:
+                            # Get the most relevant CSV
+                            best_csv = relevant_csvs[0]
+                            # Extract the csv_file_id from metadata, not the document_id
+                            csv_file_id = best_csv.get("csv_file_id", best_csv["document_id"])
+                            
+                            # Generate SQL query using AI
+                            sql_prompt = f"""
+                            Generate a SQL query to answer this question: "{request.question}"
+                            
+                            CSV Structure:
+                            - File: {best_csv['filename']}
+                            - Columns: {', '.join(best_csv['column_headers'])}
+                            - Total Rows: {best_csv['total_rows']}
+                            - Table Name: csv_data_{csv_file_id.replace('-', '_')}
+                            
+                            Instructions:
+                            - Return ONLY the SQL query, nothing else
+                            - Use the exact table name: csv_data_{csv_file_id.replace('-', '_')}
+                            - Focus on getting actual data values, not just structure
+                            - If the question asks for specific values, use WHERE clauses to find them
+                            - If the question asks for calculations, use appropriate SQL functions
+                            """
+                            
+                            try:
+                                sql_response = await gemini_client.generate_text(sql_prompt, temperature=0.1)
+                                sql_query = extract_gemini_text(sql_response).strip()
+                                
+                                # Clean up SQL query (remove markdown, etc.)
+                                if sql_query.startswith('```sql'):
+                                    sql_query = sql_query[7:]
+                                if sql_query.endswith('```'):
+                                    sql_query = sql_query[:-3]
+                                sql_query = sql_query.strip()
+                                
+                                # Execute the SQL query
+                                if sql_query and sql_query.upper().startswith('SELECT'):
+                                    try:
+                                        results, columns = csv_db_manager.execute_query(csv_file_id, sql_query)
+                                        sql_results = {
+                                            "csv_file": best_csv['filename'],
+                                            "sql_query": sql_query,
+                                            "results": results[:10],  # Limit to first 10 results
+                                            "total_results": len(results),
+                                            "columns": columns
+                                        }
+                                        logger.info(f"Executed SQL query: {sql_query}")
+                                        
+                                        # Generate a data-driven answer based on actual results
+                                        if results:
+                                            data_answer_prompt = f"""
+                                            Based on the SQL query results, provide a clear answer to: "{request.question}"
+                                            
+                                            SQL Query: {sql_query}
+                                            Results: {results[:5]}  # Show first 5 results
+                                            Total Results: {len(results)}
+                                            
+                                            Provide a concise answer based on the actual data, not just the structure.
+                                            """
+                                            
+                                            try:
+                                                data_response = await gemini_client.generate_text(data_answer_prompt, temperature=0.3)
+                                                data_answer = extract_gemini_text(data_response)
+                                                csv_answer = data_answer
+                                            except Exception as data_error:
+                                                logger.warning(f"Data answer generation failed: {data_error}")
+                                                # Fall back to original answer
+                                        
+                                    except Exception as sql_error:
+                                        logger.warning(f"SQL execution failed: {sql_error}")
+                                        sql_results = {"error": str(sql_error)}
+                                
+                            except Exception as sql_gen_error:
+                                logger.warning(f"SQL generation failed: {sql_gen_error}")
+                        
+                        # Calculate confidence based on search scores
+                        if relevant_csvs:
+                            avg_score = sum(csv["score"] for csv in relevant_csvs) / len(relevant_csvs)
+                            csv_confidence = min(avg_score * 1.2, 1.0)  # Boost confidence slightly
+                        
+                        # Create CSV sources for response
+                        csv_sources = [
+                            SearchResult(
+                                document_id=csv["document_id"],
+                                content=f"CSV File: {csv['filename']} - Columns: {', '.join(csv['column_headers'])} - Rows: {csv['total_rows']}",
+                                score=csv["score"],
+                                metadata={"type": "csv", "filename": csv["filename"]},
+                                source_index="csv_indexes"
+                            )
+                            for csv in relevant_csvs
+                        ]
+                        
+                        csv_reasoning = {
+                            "csv_files_analyzed": len(csv_indexes),
+                            "search_scores": [csv["score"] for csv in relevant_csvs],
+                            "analysis_method": "csv_index_search",
+                            "sql_results": sql_results
+                        }
+                        
+                    except Exception as e:
+                        logger.error(f"Error generating CSV answer: {e}")
+                        csv_answer = "I encountered an error while processing CSV data."
+                        csv_confidence = 0.0
+                        csv_reasoning = {"error": str(e)}
+                        
+            except Exception as csv_error:
+                logger.warning(f"CSV processing failed: {csv_error}")
+        
+        # Step 2: Perform regular document search for non-CSV content
         search_request = SearchRequest(
             query=request.question,
             index_names=request.index_names,
@@ -567,7 +773,216 @@ async def ask_question(request: AskRequest):
         # Get search results
         search_response = await search_documents(search_request)
         
-        if not search_response.results:
+        # Step 3: Combine results and generate comprehensive answer
+        all_sources = []
+        document_answer = None
+        document_confidence = 0.0
+        document_reasoning = {}
+        
+        if search_response.results:
+            # Filter out CSV sources from regular search results
+            non_csv_results = [
+                result for result in search_response.results 
+                if result.source_index != "csv_indexes"
+            ]
+            
+            if non_csv_results:
+                # Use Gemini to generate answer from document sources
+                try:
+                    sources_text = "\n\n".join([
+                        f"Source {i+1} (Score: {result.score:.3f}):\n{result.content[:1000]}"
+                        for i, result in enumerate(non_csv_results[:5])  # Top 5 sources
+                    ])
+                    
+                    answer_prompt = f"""
+                    Based on the following sources, please provide a comprehensive answer to the user's question.
+                    
+                    Question: "{request.question}"
+                    
+                    Sources:
+                    {sources_text}
+                    
+                    Please provide:
+                    1. A direct, comprehensive answer to the question
+                    2. Your confidence level (0-1) in the answer
+                    3. Reasoning for your answer
+                    4. Any limitations or uncertainties
+                    
+                    Format your response as JSON:
+                    {{
+                        "answer": "Your comprehensive answer here",
+                        "confidence": 0.85,
+                        "reasoning": "Explanation of how you arrived at this answer",
+                        "limitations": ["Any limitations or uncertainties"],
+                        "sources_used": [0, 1, 2]  // Indices of most relevant sources
+                    }}
+                    
+                    Guidelines:
+                    - Be direct and comprehensive in your answer
+                    - If the sources don't fully answer the question, acknowledge this
+                    - If there are conflicting information in sources, mention this
+                    - Provide specific details from the sources when relevant
+                    - Be honest about confidence levels and limitations
+                    """
+                    
+                    # Generate answer using Gemini
+                    answer_response = await gemini_client.generate_text(answer_prompt, temperature=0.3)
+                    
+                    # Parse the answer
+                    try:
+                        answer_text = extract_gemini_text(answer_response)
+                        # Extract JSON from response
+                        if "{" in answer_text and "}" in answer_text:
+                            start = answer_text.find("{")
+                            end = answer_text.rfind("}") + 1
+                            json_str = answer_text[start:end]
+                            answer_data = json.loads(json_str)
+                            
+                            document_answer = answer_data.get("answer", "I couldn't generate a proper answer.")
+                            document_confidence = answer_data.get("confidence", 0.5)
+                            reasoning_text = answer_data.get("reasoning", "Analysis completed")
+                            limitations = answer_data.get("limitations", [])
+                            sources_used = answer_data.get("sources_used", [])
+                            
+                        else:
+                            # Fallback if JSON parsing fails
+                            document_answer = answer_text
+                            document_confidence = 0.6
+                            reasoning_text = "Answer generated from search results"
+                            limitations = ["JSON parsing failed"]
+                            sources_used = list(range(min(3, len(non_csv_results))))
+                            
+                    except (json.JSONDecodeError, KeyError) as e:
+                        logger.warning(f"Answer JSON parsing failed: {e}")
+                        document_answer = extract_gemini_text(answer_response)
+                        document_confidence = 0.5
+                        reasoning_text = "Answer generated from search results"
+                        limitations = ["JSON parsing failed"]
+                        sources_used = list(range(min(3, len(non_csv_results))))
+                    
+                    # Add document sources
+                    all_sources.extend(non_csv_results if request.include_sources else [])
+                    
+                    # Create reasoning object
+                    document_reasoning = {
+                        "answer": reasoning_text,
+                        "confidence": document_confidence,
+                        "limitations": limitations,
+                        "sources_used": sources_used,
+                        "result_assessment": search_response.reasoning.get("result_assessment", []),
+                        "missing_info": search_response.reasoning.get("missing_info", []),
+                        "follow_up_queries": search_response.reasoning.get("follow_up_queries", [])
+                    }
+                    
+                except Exception as e:
+                    logger.error(f"Document answer generation failed: {e}")
+                    document_answer = f"I found some relevant information but couldn't generate a proper answer. Here are the search results: {non_csv_results[0].content[:200]}..."
+                    document_confidence = 0.3
+                    document_reasoning = {
+                        "answer": "Answer generation failed, providing search results",
+                        "confidence": 0.3,
+                        "limitations": ["AI answer generation failed"],
+                        "sources_used": [0],
+                        "result_assessment": [],
+                        "missing_info": [],
+                        "follow_up_queries": []
+                    }
+        
+        # Step 4: Combine CSV and document results
+        all_sources.extend(csv_sources if request.include_sources else [])
+        
+        # Generate final combined answer
+        final_answer = ""
+        final_confidence = 0.0
+        combined_reasoning = {}
+        
+        if csv_answer and document_answer:
+            # Both CSV and document results available
+            combine_prompt = f"""
+            The user asked: "{request.question}"
+            
+            I have two different types of information to answer this question:
+            
+            1. CSV Data Analysis:
+            {csv_answer}
+            Confidence: {csv_confidence}
+            
+            2. Document Analysis:
+            {document_answer}
+            Confidence: {document_confidence}
+            
+            Please provide a comprehensive answer that combines both sources of information.
+            If there are conflicts, mention them. If one source provides more specific data,
+            emphasize that. Create a unified, coherent response.
+            
+            Format your response as JSON:
+            {{
+                "answer": "Your combined comprehensive answer here",
+                "confidence": 0.85,
+                "reasoning": "Explanation of how you combined the sources",
+                "csv_contribution": "What the CSV data contributed",
+                "document_contribution": "What the documents contributed"
+            }}
+            """
+            
+            try:
+                combine_response = await gemini_client.generate_text(combine_prompt, temperature=0.3)
+                combine_text = extract_gemini_text(combine_response)
+                
+                # Extract JSON from response
+                if "{" in combine_text and "}" in combine_text:
+                    start = combine_text.find("{")
+                    end = combine_text.rfind("}") + 1
+                    json_str = combine_text[start:end]
+                    combine_data = json.loads(json_str)
+                    
+                    final_answer = combine_data.get("answer", f"{csv_answer}\n\nAdditionally, from documents: {document_answer}")
+                    final_confidence = combine_data.get("confidence", (csv_confidence + document_confidence) / 2)
+                    combined_reasoning = {
+                        "csv_contribution": combine_data.get("csv_contribution", "CSV data analysis"),
+                        "document_contribution": combine_data.get("document_contribution", "Document analysis"),
+                        "reasoning": combine_data.get("reasoning", "Combined analysis"),
+                        "csv_reasoning": csv_reasoning,
+                        "document_reasoning": document_reasoning
+                    }
+                else:
+                    final_answer = f"{csv_answer}\n\nAdditionally, from documents: {document_answer}"
+                    final_confidence = (csv_confidence + document_confidence) / 2
+                    combined_reasoning = {
+                        "csv_reasoning": csv_reasoning,
+                        "document_reasoning": document_reasoning,
+                        "reasoning": "Combined CSV and document analysis"
+                    }
+                    
+            except Exception as combine_error:
+                logger.warning(f"Combined answer generation failed: {combine_error}")
+                final_answer = f"{csv_answer}\n\nAdditionally, from documents: {document_answer}"
+                final_confidence = (csv_confidence + document_confidence) / 2
+                combined_reasoning = {
+                    "csv_reasoning": csv_reasoning,
+                    "document_reasoning": document_reasoning,
+                    "reasoning": "Combined CSV and document analysis"
+                }
+                
+        elif csv_answer:
+            # Only CSV results available
+            final_answer = csv_answer
+            final_confidence = csv_confidence
+            combined_reasoning = {
+                "csv_reasoning": csv_reasoning,
+                "reasoning": "CSV data analysis only"
+            }
+            
+        elif document_answer:
+            # Only document results available
+            final_answer = document_answer
+            final_confidence = document_confidence
+            combined_reasoning = {
+                "document_reasoning": document_reasoning,
+                "reasoning": "Document analysis only"
+            }
+            
+        else:
             # No relevant content found
             return AskResponse(
                 answer="I couldn't find any relevant information to answer your question. Please try rephrasing or uploading more relevant documents.",
@@ -583,120 +998,13 @@ async def ask_question(request: AskRequest):
                 query_analysis=search_response.query_analysis
             )
         
-        # Use Gemini to generate a comprehensive answer
-        try:
-            # Create a prompt for answer generation
-            sources_text = "\n\n".join([
-                f"Source {i+1} (Score: {result.score:.3f}):\n{result.content[:1000]}"
-                for i, result in enumerate(search_response.results[:5])  # Top 5 sources
-            ])
-            
-            answer_prompt = f"""
-            Based on the following sources, please provide a comprehensive answer to the user's question.
-            
-            Question: "{request.question}"
-            
-            Sources:
-            {sources_text}
-            
-            Please provide:
-            1. A direct, comprehensive answer to the question
-            2. Your confidence level (0-1) in the answer
-            3. Reasoning for your answer
-            4. Any limitations or uncertainties
-            
-            Format your response as JSON:
-            {{
-                "answer": "Your comprehensive answer here",
-                "confidence": 0.85,
-                "reasoning": "Explanation of how you arrived at this answer",
-                "limitations": ["Any limitations or uncertainties"],
-                "sources_used": [0, 1, 2]  // Indices of most relevant sources
-            }}
-            
-            Guidelines:
-            - Be direct and comprehensive in your answer
-            - If the sources don't fully answer the question, acknowledge this
-            - If there are conflicting information in sources, mention this
-            - Provide specific details from the sources when relevant
-            - Be honest about confidence levels and limitations
-            """
-            
-            # Generate answer using Gemini
-            answer_response = await gemini_client.generate_text(answer_prompt, temperature=0.3)
-            
-            # Parse the answer
-            try:
-                answer_text = extract_gemini_text(answer_response)
-                # Extract JSON from response
-                if "{" in answer_text and "}" in answer_text:
-                    start = answer_text.find("{")
-                    end = answer_text.rfind("}") + 1
-                    json_str = answer_text[start:end]
-                    answer_data = json.loads(json_str)
-                    
-                    answer = answer_data.get("answer", "I couldn't generate a proper answer.")
-                    confidence = answer_data.get("confidence", 0.5)
-                    reasoning_text = answer_data.get("reasoning", "Analysis completed")
-                    limitations = answer_data.get("limitations", [])
-                    sources_used = answer_data.get("sources_used", [])
-                    
-                else:
-                    # Fallback if JSON parsing fails
-                    answer = answer_text
-                    confidence = 0.6
-                    reasoning_text = "Answer generated from search results"
-                    limitations = ["JSON parsing failed"]
-                    sources_used = list(range(min(3, len(search_response.results))))
-                    
-            except (json.JSONDecodeError, KeyError) as e:
-                logger.warning(f"Answer JSON parsing failed: {e}")
-                answer = extract_gemini_text(answer_response)
-                confidence = 0.5
-                reasoning_text = "Answer generated from search results"
-                limitations = ["JSON parsing failed"]
-                sources_used = list(range(min(3, len(search_response.results))))
-            
-            # Prepare sources for response
-            sources = search_response.results if request.include_sources else []
-            
-            # Create reasoning object
-            reasoning = {
-                "answer": reasoning_text,
-                "confidence": confidence,
-                "limitations": limitations,
-                "sources_used": sources_used,
-                "result_assessment": search_response.reasoning.get("result_assessment", []),
-                "missing_info": search_response.reasoning.get("missing_info", []),
-                "follow_up_queries": search_response.reasoning.get("follow_up_queries", [])
-            }
-            
-            return AskResponse(
-                answer=answer,
-                confidence=confidence,
-                sources=sources,
-                reasoning=reasoning,
-                query_analysis=search_response.query_analysis
-            )
-            
-        except Exception as e:
-            logger.error(f"Answer generation failed: {e}")
-            # Fallback response
-            return AskResponse(
-                answer=f"I found some relevant information but couldn't generate a proper answer. Here are the search results: {search_response.results[0].content[:200]}...",
-                confidence=0.3,
-                sources=search_response.results if request.include_sources else [],
-                reasoning={
-                    "answer": "Answer generation failed, providing search results",
-                    "confidence": 0.3,
-                    "limitations": ["AI answer generation failed"],
-                    "sources_used": [0],
-                    "result_assessment": [],
-                    "missing_info": [],
-                    "follow_up_queries": []
-                },
-                query_analysis=search_response.query_analysis
-            )
+        return AskResponse(
+            answer=final_answer,
+            confidence=final_confidence,
+            sources=all_sources,
+            reasoning=combined_reasoning,
+            query_analysis=search_response.query_analysis
+        )
         
     except Exception as e:
         logger.error("Ask question failed", error=str(e), question=request.question)
@@ -756,6 +1064,7 @@ async def ask_csv_question(request: AskCSVRequest):
                 column_headers_raw = metadata.get("column_headers", "[]")
                 total_rows = metadata.get("total_rows", 0)
                 total_columns = metadata.get("total_columns", 0)
+                csv_file_id = metadata.get("csv_file_id", result.get("document_id", ""))
                 
                 # Parse column_headers from JSON string
                 try:
@@ -772,12 +1081,13 @@ async def ask_csv_question(request: AskCSVRequest):
                     "column_headers": column_headers,
                     "total_rows": total_rows,
                     "total_columns": total_columns,
-                    "document_id": result.get("document_id", "")
+                    "document_id": result.get("document_id", ""),
+                    "csv_file_id": csv_file_id
                 })
                 
                 # Create CSV index object for reasoning
                 csv_index = CSVIndex(
-                    csv_file_id=result.get("document_id", ""),
+                    csv_file_id=csv_file_id,
                     csv_filename=csv_filename,
                     column_headers=column_headers,
                     total_rows=total_rows,
@@ -823,7 +1133,8 @@ async def ask_csv_question(request: AskCSVRequest):
             if relevant_csvs:
                 # Get the most relevant CSV
                 best_csv = relevant_csvs[0]
-                csv_file_id = best_csv["document_id"]
+                # Extract the csv_file_id from metadata, not the document_id
+                csv_file_id = best_csv.get("csv_file_id", best_csv["document_id"])
                 
                 # Generate SQL query using AI
                 sql_prompt = f"""
@@ -882,7 +1193,7 @@ async def ask_csv_question(request: AskCSVRequest):
                                 try:
                                     data_response = await gemini_client.generate_text(data_answer_prompt, temperature=0.3)
                                     data_answer = extract_gemini_text(data_response)
-                                    final_answer = data_answer
+                                    csv_answer = data_answer
                                 except Exception as data_error:
                                     logger.warning(f"Data answer generation failed: {data_error}")
                                     # Fall back to original answer
@@ -1611,6 +1922,55 @@ async def debug_ai_collection_analysis():
     except Exception as e:
         logger.error(f"Debug AI collection analysis failed: {e}")
         raise HTTPException(status_code=500, detail=f"Debug analysis failed: {str(e)}")
+
+# Debug endpoint for CSV databases
+@app.get("/debug/csv_databases")
+async def debug_csv_databases():
+    """Debug endpoint to check CSV database status."""
+    try:
+        # List all CSV databases
+        databases = csv_db_manager.list_csv_databases()
+        
+        # Get database mapping
+        db_mapping = csv_db_manager.get_database_mapping()
+        
+        # Check CSV index collection
+        csv_index_collection = "csv_indexes"
+        csv_indexes_exist = await storage_manager.index_exists(csv_index_collection)
+        
+        csv_indexes = []
+        if csv_indexes_exist:
+            # Get some sample CSV indexes
+            try:
+                sample_results = await storage_manager.search_documents(
+                    index_name=csv_index_collection,
+                    query="",  # Empty query to get all
+                    limit=10,
+                    score_threshold=0.0
+                )
+                csv_indexes = [
+                    {
+                        "document_id": result.get("document_id", ""),
+                        "metadata": result.get("metadata", {}),
+                        "score": result.get("score", 0.0)
+                    }
+                    for result in sample_results
+                ]
+            except Exception as e:
+                logger.warning(f"Failed to get CSV indexes: {e}")
+        
+        return {
+            "csv_databases": databases,
+            "database_mapping": db_mapping,
+            "csv_indexes_exist": csv_indexes_exist,
+            "csv_indexes": csv_indexes,
+            "total_databases": len(databases),
+            "total_indexes": len(csv_indexes),
+            "db_directory": str(csv_db_manager.db_directory)
+        }
+    except Exception as e:
+        logger.error(f"Failed to debug CSV databases: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to debug CSV databases: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run(

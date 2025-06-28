@@ -90,13 +90,20 @@ class CSVDatabaseManager:
         try:
             # Find database file by searching for the csv_file_id in the filename
             db_path = None
+            available_dbs = []
+            
             for db_file in self.db_directory.glob("*.db"):
+                available_dbs.append(db_file.name)
                 if csv_file_id in db_file.name:
                     db_path = db_file
                     break
             
             if not db_path or not db_path.exists():
-                raise FileNotFoundError(f"Database not found for CSV file ID: {csv_file_id}")
+                error_msg = f"Database not found for CSV file ID: {csv_file_id}"
+                error_msg += f"\nAvailable databases: {available_dbs}"
+                error_msg += f"\nSearched directory: {self.db_directory}"
+                logger.error(error_msg)
+                raise FileNotFoundError(error_msg)
             
             # Connect to database
             conn = sqlite3.connect(str(db_path))
@@ -176,10 +183,39 @@ class CSVDatabaseManager:
                             "db_filename": db_file.name,
                             "metadata": metadata
                         })
+                    else:
+                        # Add database even if metadata is not available
+                        databases.append({
+                            "csv_file_id": csv_file_id,
+                            "db_path": str(db_file),
+                            "db_filename": db_file.name,
+                            "metadata": None,
+                            "error": "Metadata not available"
+                        })
             except Exception as e:
                 logger.warning(f"Error reading database {db_file}: {e}")
+                databases.append({
+                    "csv_file_id": "unknown",
+                    "db_path": str(db_file),
+                    "db_filename": db_file.name,
+                    "metadata": None,
+                    "error": str(e)
+                })
         
         return databases
+    
+    def get_database_mapping(self) -> Dict[str, str]:
+        """Get mapping of CSV file IDs to database filenames for debugging."""
+        mapping = {}
+        for db_file in self.db_directory.glob("*.db"):
+            try:
+                filename_parts = db_file.stem.split('_')
+                if len(filename_parts) >= 2:
+                    csv_file_id = filename_parts[-1]
+                    mapping[csv_file_id] = db_file.name
+            except Exception as e:
+                logger.warning(f"Error parsing database filename {db_file}: {e}")
+        return mapping
     
     def delete_csv_database(self, csv_file_id: str) -> bool:
         """Delete CSV database."""
