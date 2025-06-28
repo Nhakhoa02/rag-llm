@@ -1,8 +1,8 @@
-# Distributed Multidimensional Data Indexing & Storage Architecture
+# RAG-LLM: Distributed Retrieval-Augmented Generation Architecture
 
 ## Overview
 
-This document describes the architecture of a scalable, fault-tolerant, and consistent distributed system for indexing and storing multidimensional data optimized for Retrieval-Augmented Generation (RAG) applications.
+This document describes the architecture of RAG-LLM, a comprehensive distributed system for Retrieval-Augmented Generation that combines intelligent document processing, CSV data analysis, and scalable vector storage. The system is built with a layered architecture that separates core business logic from data storage, enabling high scalability, fault tolerance, and intelligent AI-powered responses.
 
 ## System Architecture
 
@@ -11,289 +11,365 @@ This document describes the architecture of a scalable, fault-tolerant, and cons
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Client Layer                             │
-├─────────────────────────────────────────────────────────────────┤
-│                    API Gateway / Load Balancer                  │
-├─────────────────────────────────────────────────────────────────┤
-│                    Service Layer                                │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │  Ingestion  │ │  Indexing   │ │   Query     │ │  Monitoring │ │
-│  │   Service   │ │   Service   │ │   Service   │ │   Service   │ │
+│  │   Web UI    │ │   Mobile    │ │   API       │ │   CLI       │ │
+│  │   Client    │ │   Client    │ │   Client    │ │   Tools     │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Message Queue Layer                          │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │                    Apache Kafka                             │ │
-│  └─────────────────────────────────────────────────────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Storage Layer                                │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    FastAPI Coordinator                          │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │  Cassandra  │ │  Elastic-   │ │   Vector    │ │   Object    │ │
-│  │  (Metadata) │ │   search    │ │  Databases  │ │   Storage   │ │
+│  │   Upload    │ │   Search    │ │     Ask     │ │  Cluster    │ │
+│  │   Service   │ │   Service   │ │   Service   │ │ Management  │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Consistency Layer                            │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │                    Etcd / Consul                            │ │
-│  └─────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Core Layer                                   │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │    Types    │ │  Services   │ │    API      │ │   Utils     │ │
+│  │(Processors) │ │(Ingestion/  │ │ (Endpoints) │ │(Logging,    │ │
+│  │             │ │ Inference)  │ │             │ │ Validation) │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   Data Layer                                    │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Storage   │ │ CSV DBs     │ │   Logs      │ │   Node      │ │
+│  │ (Distributed│ │ (SQLite)    │ │ (Monitoring)│ │   Data      │ │
+│  │  Vector DB) │ │             │ │             │ │ (Vectors)   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                Distributed Vector Cluster                       │
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │
+│  │ Node 1  │ │ Node 2  │ │ Node 3  │ │ Node 4  │ │ Node N  │   │
+│  │(Shards) │ │(Shards) │ │(Shards) │ │(Shards) │ │(Shards) │   │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Core Components
 
-### 1. Data Ingestion Layer
+### 1. FastAPI Coordinator
 
-The ingestion layer handles multiple data formats and provides validation, preprocessing, and routing capabilities.
+The FastAPI coordinator serves as the central API gateway, providing unified access to all system capabilities.
 
-#### Features:
-- **Multi-format Support**: PDFs, CSVs, images, documents, structured data
-- **Validation**: File type, size, content safety, metadata validation
-- **Preprocessing**: Text extraction, image processing, data cleaning
-- **Chunking**: Intelligent document splitting for optimal indexing
-- **Metadata Extraction**: Automatic metadata generation and enrichment
+#### Key Services:
 
-#### Architecture:
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Ingestion Service                            │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   File      │ │  Content    │ │   Chunking  │ │  Metadata   │ │
-│  │  Processor  │ │  Extractor  │ │   Engine    │ │  Extractor  │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Validation Layer                             │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   File      │ │   Content   │ │   Security  │ │   Schema    │ │
-│  │   Type      │ │   Safety    │ │   Scanner   │ │  Validation │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-```
+**Upload Service**
+- **Multi-format Support**: PDFs, CSVs, images, documents
+- **Validation**: File type, size, content safety
+- **Processing**: Automatic chunking and embedding
+- **Collection Management**: AI-driven document categorization
 
-### 2. Distributed Storage Layer
-
-The storage layer provides fault-tolerant, scalable storage with multiple consistency levels.
-
-#### Storage Types:
-
-**1. Cassandra (Metadata Storage)**
-- **Purpose**: Store document metadata, user data, system configuration
-- **Schema**: Optimized for time-series and metadata queries
-- **Replication**: Configurable replication factor (typically 3)
-- **Consistency**: Tunable consistency levels (ONE, QUORUM, ALL)
-
-**2. Elasticsearch (Full-text Search)**
-- **Purpose**: Full-text search and metadata filtering
-- **Indexing**: Analyzed text fields, keyword fields, numeric ranges
-- **Sharding**: Automatic sharding for horizontal scalability
-- **Replication**: Built-in replica management
-
-**3. Vector Databases (ChromaDB, Qdrant, Pinecone)**
-- **Purpose**: Store and search high-dimensional vectors
-- **Algorithms**: HNSW, IVF, LSH for approximate nearest neighbor search
-- **Optimization**: GPU acceleration, quantization, compression
-- **Scalability**: Horizontal scaling with sharding
-
-**4. Object Storage (MinIO/S3)**
-- **Purpose**: Store large files, images, and binary data
-- **Features**: Versioning, lifecycle policies, encryption
-- **Access**: RESTful API with authentication and authorization
-- **Durability**: 99.999999999% (11 9's) durability
-
-#### Storage Architecture:
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Storage Orchestrator                         │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │  Cassandra  │ │ Elastic-    │ │   Vector    │ │   Object    │ │
-│  │   Client    │ │   search    │ │   Client    │ │   Client    │ │
-│  │             │ │   Client    │ │             │ │             │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Consistency Manager                          │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Write     │ │   Read      │ │  Conflict   │ │   Backup    │ │
-│  │  Ahead Log  │ │  Repair     │ │ Resolution  │ │   Manager   │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 3. Multidimensional Indexing Engine
-
-The indexing engine creates and maintains multiple types of indexes for efficient retrieval.
-
-#### Index Types:
-
-**1. Vector Indexes**
-- **Embedding Models**: Sentence transformers, custom models
-- **Algorithms**: HNSW, IVF, LSH, FAISS
-- **Optimization**: Quantization, pruning, approximate search
-- **Dimensions**: Configurable (typically 768-1536 dimensions)
-
-**2. Metadata Indexes**
-- **Fields**: Author, date, category, tags, custom fields
-- **Types**: B-tree, hash, bitmap, inverted indexes
-- **Operations**: Range queries, exact matches, fuzzy search
-- **Optimization**: Composite indexes, covering indexes
-
-**3. Full-text Indexes**
-- **Analyzers**: Language-specific, custom analyzers
-- **Features**: Stemming, lemmatization, stop words
-- **Scoring**: TF-IDF, BM25, custom scoring functions
-- **Highlighting**: Snippet generation, context windows
-
-#### Indexing Architecture:
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Indexing Service                             │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Vector    │ │  Metadata   │ │  Full-text  │ │   Hybrid    │ │
-│  │  Indexer    │ │  Indexer    │ │  Indexer    │ │  Indexer    │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Embedding Pipeline                           │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Text      │ │   Image     │ │   Audio     │ │   Video     │ │
-│  │ Embedding   │ │ Embedding   │ │ Embedding   │ │ Embedding   │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Index Management                             │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Index     │ │   Index     │ │   Index     │ │   Index     │ │
-│  │  Creation   │ │  Updates    │ │  Deletion   │ │  Rebuilding │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 4. Query Processing Layer
-
-The query layer provides fast, accurate retrieval with multiple search strategies.
-
-#### Query Types:
-
-**1. Semantic Search**
-- **Vector Similarity**: Cosine, Euclidean, Manhattan distances
+**Search Service**
+- **Semantic Search**: Vector similarity search
 - **Hybrid Search**: Combine vector and keyword search
-- **Reranking**: Multi-stage ranking with different models
-- **Filters**: Metadata filtering with vector search
+- **Filtering**: Metadata-based filtering
+- **Reranking**: Multi-stage result ranking
 
-**2. Keyword Search**
-- **Full-text**: Boolean queries, phrase search, wildcards
-- **Fuzzy Search**: Edit distance, phonetic matching
-- **Autocomplete**: Prefix matching, suggestions
-- **Spell Correction**: Query correction and suggestions
+**Ask Service (Unified Endpoint)**
+- **CSV Processing**: SQL query generation and execution
+- **Document Search**: Semantic document retrieval
+- **AI Integration**: Gemini AI for intelligent responses
+- **Source Combination**: Intelligent merging of multiple data sources
 
-**3. Structured Queries**
-- **Metadata**: Range queries, exact matches, aggregations
-- **Joins**: Cross-index joins, nested queries
-- **Analytics**: Aggregations, faceted search, statistics
-- **Temporal**: Time-based queries, date ranges
+**Cluster Management**
+- **Health Monitoring**: Node health checks
+- **Auto-scaling**: Dynamic node management
+- **Load Balancing**: Request distribution
+- **Configuration**: Cluster configuration management
 
-#### Query Architecture:
+#### Coordinator Architecture:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Query Service                                │
+│                    FastAPI Coordinator                          │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Query     │ │   Query     │ │   Query     │ │   Query     │ │
-│  │  Parser     │ │  Optimizer  │ │  Executor   │ │  Reranker   │ │
+│  │   Upload    │ │   Search    │ │     Ask     │ │  Cluster    │ │
+│  │   Service   │ │   Service   │ │   Service   │ │ Management  │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
 ├─────────────────────────────────────────────────────────────────┤
-│                    Search Strategies                            │
+│                    Request Processing                           │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │  Semantic   │ │  Keyword    │ │ Structured  │ │   Hybrid    │ │
-│  │   Search    │ │   Search    │ │   Search    │ │   Search    │ │
+│  │   Request   │ │   Response  │ │   Error     │ │   Rate      │ │
+│  │  Validation │ │  Formatting │ │  Handling   │ │  Limiting   │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
 ├─────────────────────────────────────────────────────────────────┤
-│                    Result Processing                            │
+│                    Authentication & Authorization               │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Result    │ │   Result    │ │   Result    │ │   Result    │ │
-│  │  Aggregation│ │  Deduplication│ │  Highlighting│ │  Formatting│ │
+│  │     JWT     │ │   Role-     │ │   API Key   │ │   Audit     │ │
+│  │     Auth    │ │   Based     │ │  Management │ │   Logging   │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 5. Consistency Management
+### 2. Core Layer
 
-The consistency layer ensures data integrity across distributed components.
+The core layer contains the business logic, data models, and processing services.
 
-#### Consistency Strategies:
+#### Core Components:
 
-**1. Distributed Consensus**
-- **Protocol**: Raft consensus algorithm
-- **Coordination**: Etcd for configuration and coordination
-- **Leader Election**: Automatic leader election and failover
-- **Log Replication**: Append-only log with replication
+**Types (Data Processors)**
+- **Document Processor**: PDF, DOCX, TXT processing
+- **Image Processor**: OCR and image content extraction
+- **Tabular Processor**: CSV analysis and SQL generation
 
-**2. Consistency Levels**
-- **Strong Consistency**: Linearizable reads and writes
-- **Eventual Consistency**: Eventually consistent with conflict resolution
-- **Read-Your-Writes**: Session consistency guarantees
-- **Monotonic Reads**: Monotonic read consistency
+**Services**
+- **Ingestion Services**: Document chunking, embedding, indexing
+- **Inference Services**: AI integration, query analysis, reasoning
 
-**3. Conflict Resolution**
-- **Last-Write-Wins**: Timestamp-based resolution
-- **Vector Clocks**: Logical timestamp ordering
-- **Application-Level**: Custom conflict resolution logic
-- **Merge Strategies**: Automatic merging of conflicting updates
+**Models**
+- **Base Models**: Core data structures and types
+- **Document Models**: Document representation and metadata
+- **CSV Models**: CSV indexing and query models
+- **Storage Models**: Storage abstraction and interfaces
 
-#### Consistency Architecture:
+**Utils**
+- **Logging**: Structured logging with context
+- **Validation**: Input validation and sanitization
+- **Encryption**: Security utilities
+- **Metrics**: Performance monitoring
+
+#### Core Layer Architecture:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Consistency Manager                          │
+│                    Core Layer                                   │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Consensus │ │   Conflict  │ │   Replication│ │   Monitoring│ │
-│  │   Protocol  │ │ Resolution  │ │   Manager   │ │   Service   │ │
+│  │    Types    │ │  Services   │ │    API      │ │   Utils     │ │
+│  │(Processors) │ │(Ingestion/  │ │ (Endpoints) │ │(Logging,    │ │
+│  │             │ │ Inference)  │ │             │ │ Validation) │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
 ├─────────────────────────────────────────────────────────────────┤
-│                    State Management                             │
+│                    Service Details                              │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   State     │ │   State     │ │   State     │ │   State     │ │
-│  │  Machine    │ │  Replication│ │  Persistence│ │  Recovery   │ │
+│  │   Text      │ │   Image     │ │   CSV       │ │   AI        │ │
+│  │ Chunking    │ │ Processing  │ │ Processing  │ │ Integration │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Model Layer                                  │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Base      │ │ Document    │ │    CSV      │ │   Storage   │ │
+│  │  Models     │ │  Models     │ │   Models    │ │   Models    │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 6. Monitoring & Observability
+### 3. Data Layer
 
-The monitoring layer provides comprehensive visibility into system performance and health.
+The data layer manages all data storage and persistence.
 
-#### Monitoring Components:
+#### Storage Components:
 
-**1. Metrics Collection**
-- **Application Metrics**: Request rates, latencies, error rates
-- **System Metrics**: CPU, memory, disk, network usage
-- **Business Metrics**: User activity, data volume, search patterns
-- **Custom Metrics**: Domain-specific measurements
+**Distributed Vector Storage**
+- **Purpose**: Store and search high-dimensional vectors
+- **Sharding**: Automatic data distribution across nodes
+- **Replication**: Fault-tolerant data replication
+- **Consistency**: Configurable consistency levels
 
-**2. Distributed Tracing**
-- **Request Tracing**: End-to-end request tracking
-- **Span Correlation**: Cross-service span correlation
-- **Performance Analysis**: Bottleneck identification
-- **Dependency Mapping**: Service dependency visualization
+**CSV Database Manager**
+- **Purpose**: SQL-based CSV data processing
+- **Storage**: SQLite databases for each CSV file
+- **Query Generation**: AI-powered SQL query generation
+- **Data Analysis**: Column analysis and type inference
 
-**3. Logging**
-- **Structured Logging**: JSON-formatted logs with context
-- **Log Aggregation**: Centralized log collection and storage
-- **Log Analysis**: Pattern recognition and anomaly detection
-- **Audit Logging**: Security and compliance logging
+**Node Data Storage**
+- **Purpose**: Local vector storage on each node
+- **Format**: Optimized binary format for fast access
+- **Indexing**: HNSW, IVF, or LSH indexing algorithms
+- **Compression**: Vector quantization and compression
 
-#### Monitoring Architecture:
+**Logging and Monitoring**
+- **Application Logs**: Structured logging with levels
+- **Performance Metrics**: Request/response metrics
+- **Health Data**: Node and cluster health information
+- **Audit Trails**: Security and access logging
+
+#### Data Layer Architecture:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Monitoring Stack                             │
+│                   Data Layer                                    │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │ Prometheus  │ │   Jaeger    │ │   Grafana   │ │   Alert     │ │
-│  │ (Metrics)   │ │ (Tracing)   │ │ (Dashboard) │ │  Manager    │ │
+│  │   Storage   │ │ CSV DBs     │ │   Logs      │ │   Node      │ │
+│  │ (Distributed│ │ (SQLite)    │ │ (Monitoring)│ │   Data      │ │
+│  │  Vector DB) │ │             │ │             │ │ (Vectors)   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Storage Management                           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Sharding  │ │ Replication │ │ Consistency │ │   Backup    │ │
+│  │   Manager   │ │   Manager   │ │   Manager   │ │   Manager   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Data Processing                              │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Vector    │ │   SQL       │ │   Log       │ │   Metrics   │ │
+│  │  Operations │ │  Processing │ │  Processing │ │ Collection  │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 4. Distributed Vector Cluster
+
+The distributed vector cluster provides scalable, fault-tolerant vector storage.
+
+#### Cluster Components:
+
+**Vector Nodes**
+- **Purpose**: Individual vector storage and search nodes
+- **Sharding**: Each node stores a subset of data shards
+- **Replication**: Shards replicated across multiple nodes
+- **Health Monitoring**: Continuous health checks
+
+**Auto-scaling**
+- **Scale-up**: Add nodes when load increases
+- **Scale-down**: Remove nodes when load decreases
+- **Thresholds**: Configurable scaling thresholds
+- **Cooldown**: Prevent rapid scaling oscillations
+
+**Load Balancing**
+- **Request Distribution**: Distribute requests across nodes
+- **Health-based Routing**: Route to healthy nodes only
+- **Load Monitoring**: Track node load and performance
+- **Failover**: Automatic failover to healthy nodes
+
+#### Cluster Architecture:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                Distributed Vector Cluster                       │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │
+│  │ Node 1  │ │ Node 2  │ │ Node 3  │ │ Node 4  │ │ Node N  │   │
+│  │(Shards) │ │(Shards) │ │(Shards) │ │(Shards) │ │(Shards) │   │
+│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                    Cluster Management                           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Auto-     │ │   Load      │ │   Health    │ │   Shard     │ │
+│  │  Scaling    │ │ Balancing   │ │ Monitoring  │ │ Management │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Communication                                │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Peer-to-  │ │   Gossip    │ │   Heartbeat │ │   Data      │ │
+│  │    Peer     │ │  Protocol   │ │   Protocol  │ │  Transfer   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Key Features
+
+### 1. Unified `/ask` Endpoint
+
+The system's most innovative feature - a single endpoint that intelligently processes all data types.
+
+#### Capabilities:
+- **CSV Data Processing**: Automatic SQL generation and execution
+- **Document Search**: Semantic search across documents
+- **AI Integration**: Gemini AI for intelligent response generation
+- **Source Combination**: Intelligent merging of multiple data sources
+- **Conflict Resolution**: Handling conflicting information from different sources
+
+#### Processing Flow:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Unified /ask Endpoint                        │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Query     │ │   CSV       │ │ Document    │ │   AI        │ │
+│  │  Analysis   │ │ Processing  │ │   Search    │ │ Integration │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
 ├─────────────────────────────────────────────────────────────────┤
 │                    Data Collection                              │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Metrics   │ │   Traces    │ │    Logs     │ │   Events    │ │
-│  │  Collector  │ │  Collector  │ │  Collector  │ │  Collector  │ │
+│  │   CSV       │ │   SQL       │ │ Document    │ │   Vector    │ │
+│  │   Search    │ │  Execution  │ │   Sources   │ │   Results   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Response Generation                          │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Source    │ │   Conflict  │ │   AI        │ │   Final     │ │
+│  │ Combination │ │ Resolution  │ │ Reasoning   │ │ Response    │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 2. Intelligent CSV Processing
+
+Advanced CSV data analysis with AI-powered SQL generation.
+
+#### Features:
+- **Automatic SQL Generation**: AI converts natural language to SQL
+- **Real Data Execution**: Direct execution against CSV databases
+- **Column Analysis**: Automatic data type inference
+- **Multi-CSV Support**: Query across multiple CSV files
+- **Relevance Scoring**: Rank CSV files by relevance
+
+#### CSV Processing Architecture:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    CSV Processing Pipeline                       │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   CSV       │ │   Column    │ │   Data      │ │   SQLite    │ │
+│  │  Upload     │ │  Analysis   │ │   Type      │ │  Database   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Query Processing                             │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Natural   │ │   SQL       │ │   Query     │ │   Result    │ │
+│  │  Language   │ │ Generation  │ │ Execution   │ │ Processing  │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Data Integration                             │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   CSV       │ │   Document  │ │   AI        │ │   Unified   │ │
+│  │   Results   │ │   Results   │ │ Reasoning   │ │ Response    │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 3. Distributed Vector Storage
+
+Scalable, fault-tolerant vector storage with automatic sharding and replication.
+
+#### Features:
+- **Automatic Sharding**: Data distributed across nodes
+- **Fault Tolerance**: Replication ensures data availability
+- **Auto-scaling**: Dynamic node addition/removal
+- **Health Monitoring**: Continuous cluster health checks
+- **Load Balancing**: Intelligent request distribution
+
+#### Vector Storage Architecture:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Vector Storage Layer                         │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Vector    │ │   Index     │ │   Search    │ │   Storage   │ │
+│  │  Embedding  │ │ Management  │ │  Algorithms │ │   Engine    │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Distribution Layer                           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Sharding  │ │ Replication │ │ Consistency │ │   Routing   │ │
+│  │   Strategy  │ │   Manager   │ │   Manager   │ │   Service   │ │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│                    Cluster Management                           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
+│  │   Node      │ │   Auto-     │ │   Health    │ │   Load      │ │
+│  │ Management  │ │  Scaling    │ │ Monitoring  │ │ Balancing   │ │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -303,7 +379,7 @@ The monitoring layer provides comprehensive visibility into system performance a
 ### 1. Horizontal Scaling
 
 **Service Scaling**
-- Stateless services for easy horizontal scaling
+- Stateless API services for easy horizontal scaling
 - Load balancing with health checks
 - Auto-scaling based on metrics
 - Graceful shutdown and startup
@@ -312,7 +388,7 @@ The monitoring layer provides comprehensive visibility into system performance a
 - Sharding strategies for data distribution
 - Consistent hashing for load balancing
 - Rebalancing for dynamic scaling
-- Multi-region deployment
+- Multi-region deployment support
 
 ### 2. Vertical Scaling
 
@@ -325,9 +401,9 @@ The monitoring layer provides comprehensive visibility into system performance a
 ### 3. Caching Strategies
 
 **Multi-Level Caching**
-- Application-level caching (Redis)
+- Application-level caching for frequent queries
 - Database query caching
-- CDN for static content
+- Vector search result caching
 - Browser caching for client-side
 
 ## Fault Tolerance
@@ -363,8 +439,8 @@ The monitoring layer provides comprehensive visibility into system performance a
 **Identity Management**
 - JWT-based authentication
 - Role-based access control (RBAC)
-- OAuth2 integration
-- Multi-factor authentication
+- API key management
+- Multi-factor authentication support
 
 **Access Control**
 - API-level authorization
@@ -381,10 +457,10 @@ The monitoring layer provides comprehensive visibility into system performance a
 - Secure key storage
 
 **Privacy**
-- Data anonymization
-- GDPR compliance
+- Data anonymization capabilities
+- GDPR compliance features
 - Data retention policies
-- Right to be forgotten
+- Right to be forgotten support
 
 ## Performance Characteristics
 
@@ -392,15 +468,15 @@ The monitoring layer provides comprehensive visibility into system performance a
 
 - **API Response**: < 100ms for 95th percentile
 - **Search Queries**: < 50ms for vector search
-- **Data Ingestion**: < 1s per document
-- **Index Updates**: < 5s for real-time updates
+- **CSV Processing**: < 200ms for SQL execution
+- **AI Integration**: < 2s for response generation
 
 ### 2. Throughput Targets
 
 - **Document Ingestion**: 10,000+ documents/hour
 - **Search Queries**: 1,000+ queries/second
+- **CSV Processing**: 100+ CSV files simultaneously
 - **Concurrent Users**: 10,000+ simultaneous users
-- **Data Storage**: Petabyte-scale storage capacity
 
 ### 3. Availability Targets
 
@@ -447,33 +523,42 @@ The monitoring layer provides comprehensive visibility into system performance a
 ### 2. Performance Optimization
 
 - **Indexing Strategy**: Optimal index design and maintenance
-- **Query Optimization**: Query planning and execution optimization
+- **Query Optimization**: Efficient query planning and execution
 - **Caching Strategy**: Multi-level caching for performance
-- **Resource Management**: Efficient resource utilization
+- **Resource Management**: Efficient resource allocation and usage
 
-### 3. Monitoring and Alerting
+### 3. Monitoring and Observability
 
-- **Proactive Monitoring**: Early detection of issues
-- **Alert Management**: Intelligent alerting with escalation
-- **Performance Baselines**: Establishing and monitoring baselines
-- **Capacity Planning**: Predictive capacity planning
+- **Metrics Collection**: Comprehensive performance metrics
+- **Distributed Tracing**: End-to-end request tracking
+- **Logging**: Structured logging with context
+- **Alerting**: Proactive alerting for issues
 
-### 4. Security and Compliance
+## Future Enhancements
 
-- **Security by Design**: Security built into every layer
-- **Compliance**: GDPR, HIPAA, SOC2 compliance
-- **Audit Trail**: Comprehensive audit logging
-- **Incident Response**: Security incident response procedures
+### 1. Advanced AI Features
 
-## Conclusion
+- **Multi-modal AI**: Support for image, audio, and video processing
+- **Conversational AI**: Chat-based interaction with memory
+- **Custom Models**: Support for custom embedding models
+- **Fine-tuning**: Model fine-tuning capabilities
 
-This architecture provides a robust, scalable, and maintainable foundation for distributed data indexing and storage systems. The modular design allows for independent scaling and evolution of components while maintaining consistency and reliability across the entire system.
+### 2. Enhanced Analytics
 
-The system is designed to handle the challenges of modern RAG applications, including:
-- Large-scale data ingestion and processing
-- Real-time search and retrieval
-- High availability and fault tolerance
-- Security and compliance requirements
-- Performance optimization and monitoring
+- **Business Intelligence**: Advanced analytics and reporting
+- **Data Visualization**: Interactive data visualization
+- **Predictive Analytics**: Machine learning-based predictions
+- **Real-time Analytics**: Streaming analytics capabilities
+
+### 3. Enterprise Features
+
+- **Multi-tenancy**: Support for multiple organizations
+- **Advanced Security**: Enhanced security and compliance features
+- **Integration APIs**: Comprehensive integration capabilities
+- **Custom Workflows**: Configurable processing workflows
+
+---
+
+**This architecture provides a solid foundation for building scalable, intelligent, and reliable RAG applications that can handle diverse data types and provide meaningful insights through AI-powered analysis.** 
 
 By following these architectural principles and best practices, the system can scale from small deployments to enterprise-grade installations while maintaining performance, reliability, and security. 
