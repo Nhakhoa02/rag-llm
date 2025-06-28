@@ -4,7 +4,7 @@ Document processing module for handling different file types.
 
 import os
 import io
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional, Union, Tuple
 from pathlib import Path
 import pandas as pd
 from PIL import Image
@@ -16,6 +16,7 @@ from pypdf import PdfReader
 import google.generativeai as genai
 
 from ..models.base import BaseDocument, DataType, ProcessingStatus
+from ..models.csv_index import CSVIndex, CSVIndexDocument
 from ..utils.logging import LoggerMixin
 from ..utils.validation import data_validator
 from ..utils.metrics import monitor_function
@@ -201,31 +202,54 @@ class ImageProcessor(LoggerMixin):
                 content=caption,
                 metadata=metadata or {}
             )
+            
+            # Add image metadata
             doc.update_metadata("file_path", str(file_path))
-            doc.update_metadata("image_size", image.size)
-            doc.update_metadata("image_mode", image.mode)
-            doc.update_metadata("image_format", image.format)
+            doc.update_metadata("file_size", file_path.stat().st_size)
+            doc.update_metadata("file_extension", extension)
             doc.update_metadata("image_features", features)
             doc.update_metadata("file_hash", data_validator.calculate_file_hash(file_path))
+            
             doc.status = ProcessingStatus.COMPLETED
             self.logger.info("Image processed successfully", document_id=doc.id, file_path=str(file_path))
+            
             return doc
+            
         except Exception as e:
             self.logger.error("Image processing failed", error=str(e), file_path=str(file_path))
             raise
-
+    
     def get_gemini_image_caption(self, image_path: str) -> str:
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        image = Image.open(image_path).convert("RGB")
-        response = model.generate_content([image], stream=False)
+        """Generate image caption using Gemini Vision."""
+        try:
+            # Configure Gemini
+            genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+            model = genai.GenerativeModel('gemini-2.0-flash-exp')
+            
+            # Load and process image
+            image = Image.open(image_path)
+            
+            # Generate caption
+            response = model.generate_content([
+                "Describe this image in detail, focusing on the main subjects, actions, and context. Be specific about what you see.",
+                image
+            ])
+            
+            # Extract text from response
+            if hasattr(response, "text") and response.text:
+                return response.text.strip()
+            
+            # Fallback to parts if text doesn't work
+            if hasattr(response, "parts") and response.parts:
+                text_parts = []
+                for part in response.parts:
+                    if hasattr(part, "text") and part.text:
+                        text_parts.append(part.text)
+                return " ".join(text_parts)
         
-        # Extract text from response parts
-        if hasattr(response, "parts") and response.parts:
-            text_parts = []
-            for part in response.parts:
-                if hasattr(part, "text") and part.text:
-                    text_parts.append(part.text)
-            return " ".join(text_parts)
+        except Exception as e:
+            self.logger.warning(f"Gemini Vision caption generation failed: {e}")
+            return f"Image file: {os.path.basename(image_path)}"
         
         # Fallback to candidates if parts don't work
         if hasattr(response, "candidates") and response.candidates:
@@ -255,7 +279,7 @@ class ImageProcessor(LoggerMixin):
 
 
 class TabularProcessor(LoggerMixin):
-    """Processor for tabular data (CSV, Excel, etc.)."""
+    """Processor for tabular data (CSV, Excel, etc.) with CSV indexing support."""
     
     def __init__(self):
         super().__init__()
@@ -307,6 +331,12 @@ class TabularProcessor(LoggerMixin):
             doc.update_metadata("structure_info", structure_info)
             doc.update_metadata("file_hash", data_validator.calculate_file_hash(file_path))
             
+            # For CSV files, create and store CSV index
+            if extension == '.csv':
+                csv_index = self._create_csv_index(df, doc.id, file_path.name)
+                doc.update_metadata("csv_index", csv_index.to_dict())
+                self.logger.info(f"Created CSV index for {file_path.name}")
+            
             doc.status = ProcessingStatus.COMPLETED
             self.logger.info("Tabular data processed successfully", document_id=doc.id, file_path=str(file_path))
             
@@ -347,6 +377,68 @@ class TabularProcessor(LoggerMixin):
             info["numeric_stats"] = df[numeric_cols].describe().to_dict()
         
         return info
+    
+    def _create_csv_index(self, df: pd.DataFrame, csv_file_id: str, filename: str) -> CSVIndex:
+        """Create a CSV index from the first and second rows of the dataframe."""
+        try:
+            # Extract first row (column headers)
+            column_headers = df.columns.tolist()
+            
+            # Extract second row (sample data) if available
+            sample_data = None
+            if len(df) > 0:
+                second_row = df.iloc[0].tolist()  # First data row (index 0)
+                sample_data = [str(val) if pd.notna(val) else "" for val in second_row]
+            
+            # Infer data types from sample
+            inferred_types = {}
+            if sample_data:
+                for header, value in zip(column_headers, sample_data):
+                    if value:
+                        try:
+                            # Try to infer type
+                            if value.replace('.', '').replace('-', '').isdigit():
+                                if '.' in value:
+                                    inferred_types[header] = 'float'
+                                else:
+                                    inferred_types[header] = 'int'
+                            else:
+                                inferred_types[header] = 'string'
+                        except:
+                            inferred_types[header] = 'string'
+            
+            # Create CSV index
+            csv_index = CSVIndex(
+                csv_file_id=csv_file_id,
+                csv_filename=filename,
+                column_headers=column_headers,
+                sample_data=sample_data,
+                total_rows=len(df),
+                total_columns=len(df.columns),
+                inferred_types=inferred_types
+            )
+            
+            # Generate index content
+            csv_index.update_index_content()
+            
+            return csv_index
+            
+        except Exception as e:
+            self.logger.error(f"Failed to create CSV index: {e}")
+            # Return a minimal index
+            return CSVIndex(
+                csv_file_id=csv_file_id,
+                csv_filename=filename,
+                column_headers=df.columns.tolist(),
+                total_rows=len(df),
+                total_columns=len(df.columns)
+            )
+    
+    def create_csv_index_document(self, csv_index: CSVIndex) -> CSVIndexDocument:
+        """Create a CSV index document for vector storage."""
+        if csv_index is None:
+            raise ValueError("CSV index cannot be None")
+        return CSVIndexDocument(csv_index=csv_index)
     
     def _convert_to_text(self, df: pd.DataFrame) -> str:
         """Convert dataframe to text representation that's AI-friendly."""

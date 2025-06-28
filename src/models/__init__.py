@@ -8,6 +8,7 @@ from .index import IndexEntry, VectorIndex, MetadataIndex
 from .query import QueryRequest, QueryResponse, SearchResult
 from .storage import StorageConfig, StorageMetadata
 from .consistency import ConsistencyLevel, ReplicationConfig
+from .csv_index import CSVIndex, CSVIndexDocument
 
 __all__ = [
     "BaseModel",
@@ -26,4 +27,6 @@ __all__ = [
     "StorageMetadata",
     "ConsistencyLevel",
     "ReplicationConfig",
+    "CSVIndex",
+    "CSVIndexDocument",
 ] 

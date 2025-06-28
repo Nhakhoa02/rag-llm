@@ -24,7 +24,9 @@ from ..storage.distributed_storage_manager import create_distributed_storage_man
 from ..storage.distributed_vector_store import VectorNode
 from ..models.base import BaseDocument, DataType
 from ..models.document import Document as DocModel
+from ..models.csv_index import CSVIndex, CSVIndexDocument
 from ..storage.auto_scaler import create_auto_scaler, ScalingThresholds
+from ..storage.csv_database import csv_db_manager
 
 # Initialize components
 logger = get_logger(__name__)
@@ -120,10 +122,10 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.api.cors_origins,
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
-    allow_methods=settings.api.cors_methods,
-    allow_headers=settings.api.cors_headers,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 # Request/Response models
@@ -134,6 +136,7 @@ class UploadResponse(BaseModel):
     chunks_created: int
     metadata: Dict[str, Any]
     content: str = ""
+    csv_index_id: Optional[str] = None
 
 class SearchRequest(BaseModel):
     query: str
@@ -170,6 +173,19 @@ class AskResponse(BaseModel):
     reasoning: Dict[str, Any]
     query_analysis: Dict[str, Any]
 
+class AskCSVRequest(BaseModel):
+    question: str
+    limit: int = 10
+    score_threshold: float = 0.5
+    include_sources: bool = True
+
+class AskCSVResponse(BaseModel):
+    answer: str
+    confidence: float
+    relevant_csvs: List[Dict[str, Any]]
+    reasoning: Dict[str, Any]
+    query_analysis: Dict[str, Any]
+
 class IndexInfo(BaseModel):
     name: str
     type: str
@@ -203,30 +219,33 @@ async def upload_file(
     chunk_strategy: str = Form("auto")
 ):
     """
-    Upload and process a file for indexing.
-    
-    This endpoint handles the complete flow:
-    1. File validation and processing
-    2. Content extraction and chunking
-    3. Metadata extraction using Gemini AI
-    4. Vector embedding generation
-    5. Distributed storage in Qdrant
+    Upload and process a file, storing it in the distributed vector database.
+    For CSV files, also creates and stores a CSV index for quick lookup.
     """
     try:
-        import tempfile
-        import os
-        
-        logger.info(f"Received upload: {file.filename}")
         # Parse metadata
         try:
-            file_metadata = json.loads(metadata)
+            file_metadata = json.loads(metadata) if metadata else {}
         except json.JSONDecodeError:
             file_metadata = {}
         
-        # Save uploaded file temporarily
-        filename = file.filename or "unknown_file"
+        # Add file metadata
+        filename = file.filename or "unknown"
+        file_metadata.update({
+            "filename": filename,
+            "mime_type": file.content_type,
+            "file_size": file.size,
+            "upload_timestamp": time.time()
+        })
+        
+        # Read file content
+        content = await file.read()
+        
+        # Create temporary file for processing
+        import tempfile
+        import os
+        
         with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(filename)[1]) as temp_file:
-            content = await file.read()
             temp_file.write(content)
             temp_file_path = temp_file.name
         
@@ -311,6 +330,45 @@ async def upload_file(
                         logger.error(f"Error storing in collection {collection_name}: {e}")
                         continue
                 
+                # Handle CSV indexing
+                csv_index_id = None
+                if file_extension == '.csv' and document.metadata.get('csv_index'):
+                    try:
+                        # Create CSV index collection if it doesn't exist
+                        csv_index_collection = "csv_indexes"
+                        if not await storage_manager.index_exists(csv_index_collection):
+                            await storage_manager.create_index(csv_index_collection, vector_size)
+                            logger.info(f"Created CSV index collection: {csv_index_collection}")
+                        
+                        # Create CSV index document
+                        csv_index_data = document.metadata['csv_index']
+                        csv_index = CSVIndex.from_dict(csv_index_data)
+                        csv_index_doc = tabular_processor.create_csv_index_document(csv_index)
+                        
+                        # Store CSV index in dedicated collection
+                        success = await storage_manager.upsert_documents(
+                            index_name=csv_index_collection,
+                            documents=[DocModel(**csv_index_doc.to_dict())]
+                        )
+                        
+                        if success:
+                            csv_index_id = csv_index.id
+                            logger.info(f"CSV index stored: {csv_index_id}")
+                            
+                            # Store CSV data in SQLite database for query execution
+                            try:
+                                db_path = csv_db_manager.store_csv_data(csv_index, temp_file_path)
+                                logger.info(f"CSV data stored in database: {db_path}")
+                                # Add database path to metadata
+                                document.update_metadata("sqlite_db_path", db_path)
+                            except Exception as db_error:
+                                logger.error(f"Failed to store CSV data in database: {db_error}")
+                        else:
+                            logger.warning("Failed to store CSV index")
+                            
+                    except Exception as e:
+                        logger.error(f"Error storing CSV index: {e}")
+                
                 if not stored_collections:
                     # Fallback to default collection
                     default_collection = f"index_{document.type.value}"
@@ -329,7 +387,8 @@ async def upload_file(
                     message=f"Document processed and stored in {len(stored_collections)} collections",
                     chunks_created=len(chunked_docs),
                     metadata=document.metadata,
-                    content=document.content[:500] + "..." if len(document.content) > 500 else document.content
+                    content=document.content[:500] + "..." if len(document.content) > 500 else document.content,
+                    csv_index_id=csv_index_id
                 )
             else:
                 raise HTTPException(status_code=500, detail="No embeddings generated")
@@ -642,6 +701,268 @@ async def ask_question(request: AskRequest):
     except Exception as e:
         logger.error("Ask question failed", error=str(e), question=request.question)
         raise HTTPException(status_code=500, detail=f"Ask question failed: {str(e)}")
+
+# CSV-specific ask endpoint
+@app.post("/ask_csv", response_model=AskCSVResponse)
+async def ask_csv_question(request: AskCSVRequest):
+    """
+    Ask questions about CSV data using the CSV index for relevance matching.
+    
+    This endpoint:
+    1. Searches the CSV index collection to find relevant CSV files
+    2. Uses the CSV index content to understand the structure
+    3. Generates appropriate SQL or search logic for the user's question
+    """
+    try:
+        # Search for relevant CSV indexes
+        csv_index_collection = "csv_indexes"
+        
+        # Check if CSV index collection exists
+        if not await storage_manager.index_exists(csv_index_collection):
+            return AskCSVResponse(
+                answer="No CSV files have been uploaded yet. Please upload some CSV files first.",
+                confidence=0.0,
+                relevant_csvs=[],
+                reasoning={"error": "No CSV indexes found"},
+                query_analysis={"status": "no_csv_files"}
+            )
+        
+        # Search for relevant CSV indexes
+        csv_search_results = await storage_manager.search_documents(
+            index_name=csv_index_collection,
+            query=request.question,
+            limit=5,  # Get top 5 most relevant CSV files
+            score_threshold=request.score_threshold
+        )
+        
+        if not csv_search_results:
+            return AskCSVResponse(
+                answer="I couldn't find any CSV files relevant to your question. Please try rephrasing or upload relevant CSV files.",
+                confidence=0.0,
+                relevant_csvs=[],
+                reasoning={"error": "No relevant CSV files found"},
+                query_analysis={"status": "no_relevant_csvs"}
+            )
+        
+        # Extract CSV index information from search results
+        relevant_csvs = []
+        csv_indexes = []
+        
+        for result in csv_search_results:
+            try:
+                # Extract CSV index data from metadata
+                metadata = result.get("metadata", {})
+                csv_filename = metadata.get("csv_filename", "unknown")
+                column_headers_raw = metadata.get("column_headers", "[]")
+                total_rows = metadata.get("total_rows", 0)
+                total_columns = metadata.get("total_columns", 0)
+                
+                # Parse column_headers from JSON string
+                try:
+                    if isinstance(column_headers_raw, str):
+                        column_headers = json.loads(column_headers_raw)
+                    else:
+                        column_headers = column_headers_raw or []
+                except json.JSONDecodeError:
+                    column_headers = []
+                
+                relevant_csvs.append({
+                    "filename": csv_filename,
+                    "score": result.get("score", 0.0),
+                    "column_headers": column_headers,
+                    "total_rows": total_rows,
+                    "total_columns": total_columns,
+                    "document_id": result.get("document_id", "")
+                })
+                
+                # Create CSV index object for reasoning
+                csv_index = CSVIndex(
+                    csv_file_id=result.get("document_id", ""),
+                    csv_filename=csv_filename,
+                    column_headers=column_headers,
+                    total_rows=total_rows,
+                    total_columns=total_columns,
+                    sample_data=None,  # We don't have sample data from search results
+                    inferred_types=None  # We don't have inferred types from search results
+                )
+                csv_indexes.append(csv_index)
+                
+            except Exception as e:
+                logger.warning(f"Error processing CSV search result: {e}")
+                continue
+        
+        # Use AI to analyze the question and generate SQL/answer
+        csv_context = "\n\n".join([
+            f"CSV: {csv.csv_filename}\nColumns: {', '.join(csv.column_headers)}\nRows: {csv.total_rows}"
+            for csv in csv_indexes
+        ])
+        
+        reasoning_prompt = f"""
+        You are a data analyst with access to CSV files. The user has asked: "{request.question}"
+        
+        Available CSV Files:
+        {csv_context}
+        
+        Your task is to:
+        1. Identify which CSV file(s) contain the data needed to answer the question
+        2. Generate appropriate SQL queries to extract the required data
+        3. Execute the SQL queries to get actual results
+        4. Provide a clear answer based on the real data, not just the structure
+        
+        Focus on getting actual data values, not just describing what data would be needed.
+        """
+        
+        try:
+            response = await gemini_client.generate_text(reasoning_prompt, temperature=0.3)
+            answer = extract_gemini_text(response)
+            
+            # Try to generate and execute SQL queries for the most relevant CSV
+            sql_results = []
+            final_answer = answer  # Start with the AI-generated answer
+            
+            if relevant_csvs:
+                # Get the most relevant CSV
+                best_csv = relevant_csvs[0]
+                csv_file_id = best_csv["document_id"]
+                
+                # Generate SQL query using AI
+                sql_prompt = f"""
+                Generate a SQL query to answer this question: "{request.question}"
+                
+                CSV Structure:
+                - File: {best_csv['filename']}
+                - Columns: {', '.join(best_csv['column_headers'])}
+                - Total Rows: {best_csv['total_rows']}
+                - Table Name: csv_data_{csv_file_id.replace('-', '_')}
+                
+                Instructions:
+                - Return ONLY the SQL query, nothing else
+                - Use the exact table name: csv_data_{csv_file_id.replace('-', '_')}
+                - Focus on getting actual data values, not just structure
+                - If the question asks for specific values, use WHERE clauses to find them
+                - If the question asks for calculations, use appropriate SQL functions
+                """
+                
+                try:
+                    sql_response = await gemini_client.generate_text(sql_prompt, temperature=0.1)
+                    sql_query = extract_gemini_text(sql_response).strip()
+                    
+                    # Clean up SQL query (remove markdown, etc.)
+                    if sql_query.startswith('```sql'):
+                        sql_query = sql_query[7:]
+                    if sql_query.endswith('```'):
+                        sql_query = sql_query[:-3]
+                    sql_query = sql_query.strip()
+                    
+                    # Execute the SQL query
+                    if sql_query and sql_query.upper().startswith('SELECT'):
+                        try:
+                            results, columns = csv_db_manager.execute_query(csv_file_id, sql_query)
+                            sql_results = {
+                                "csv_file": best_csv['filename'],
+                                "sql_query": sql_query,
+                                "results": results[:10],  # Limit to first 10 results
+                                "total_results": len(results),
+                                "columns": columns
+                            }
+                            logger.info(f"Executed SQL query: {sql_query}")
+                            
+                            # Generate a data-driven answer based on actual results
+                            if results:
+                                data_answer_prompt = f"""
+                                Based on the SQL query results, provide a clear answer to: "{request.question}"
+                                
+                                SQL Query: {sql_query}
+                                Results: {results[:5]}  # Show first 5 results
+                                Total Results: {len(results)}
+                                
+                                Provide a concise answer based on the actual data, not just the structure.
+                                """
+                                
+                                try:
+                                    data_response = await gemini_client.generate_text(data_answer_prompt, temperature=0.3)
+                                    data_answer = extract_gemini_text(data_response)
+                                    final_answer = data_answer
+                                except Exception as data_error:
+                                    logger.warning(f"Data answer generation failed: {data_error}")
+                                    # Fall back to original answer
+                            
+                        except Exception as sql_error:
+                            logger.warning(f"SQL execution failed: {sql_error}")
+                            sql_results = {"error": str(sql_error)}
+                    
+                except Exception as sql_gen_error:
+                    logger.warning(f"SQL generation failed: {sql_gen_error}")
+            
+            # Calculate confidence based on search scores
+            if relevant_csvs:
+                avg_score = sum(csv["score"] for csv in relevant_csvs) / len(relevant_csvs)
+                confidence = min(avg_score * 1.2, 1.0)  # Boost confidence slightly
+            else:
+                confidence = 0.0
+            
+            return AskCSVResponse(
+                answer=final_answer,
+                confidence=confidence,
+                relevant_csvs=relevant_csvs,
+                reasoning={
+                    "csv_files_analyzed": len(csv_indexes),
+                    "search_scores": [csv["score"] for csv in relevant_csvs],
+                    "analysis_method": "csv_index_search",
+                    "sql_results": sql_results
+                },
+                query_analysis={
+                    "question_type": "csv_query",
+                    "relevant_csv_count": len(relevant_csvs),
+                    "best_match_score": max([csv["score"] for csv in relevant_csvs]) if relevant_csvs else 0.0
+                }
+            )
+            
+        except Exception as e:
+            logger.error(f"Error generating CSV answer: {e}")
+            return AskCSVResponse(
+                answer="I encountered an error while processing your question. Please try again.",
+                confidence=0.0,
+                relevant_csvs=relevant_csvs,
+                reasoning={"error": str(e)},
+                query_analysis={"status": "error"}
+            )
+            
+    except Exception as e:
+        logger.error(f"CSV question processing failed: {e}")
+        raise HTTPException(status_code=500, detail=f"CSV question processing failed: {str(e)}")
+
+# List CSV databases endpoint
+@app.get("/csv_databases")
+async def list_csv_databases():
+    """List all CSV databases with their metadata."""
+    try:
+        databases = csv_db_manager.list_csv_databases()
+        return {
+            "total_databases": len(databases),
+            "databases": databases
+        }
+    except Exception as e:
+        logger.error(f"Failed to list CSV databases: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to list CSV databases: {str(e)}")
+
+# Execute SQL query endpoint
+@app.post("/execute_sql")
+async def execute_sql_query(csv_file_id: str = Query(..., description="CSV file ID"), 
+                          sql_query: str = Query(..., description="SQL query to execute")):
+    """Execute a SQL query on a specific CSV database."""
+    try:
+        results, columns = csv_db_manager.execute_query(csv_file_id, sql_query)
+        return {
+            "csv_file_id": csv_file_id,
+            "sql_query": sql_query,
+            "results": results,
+            "columns": columns,
+            "total_results": len(results)
+        }
+    except Exception as e:
+        logger.error(f"Failed to execute SQL query: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to execute SQL query: {str(e)}")
 
 # Get indexes endpoint
 @app.get("/indexes", response_model=List[IndexInfo])
