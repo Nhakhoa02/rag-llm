@@ -58,60 +58,6 @@ This document describes the architecture of RAG-LLM, a comprehensive distributed
 
 ## Core Components
 
-### 1. FastAPI Coordinator
-
-The FastAPI coordinator serves as the central API gateway, providing unified access to all system capabilities.
-
-#### Key Services:
-
-**Upload Service**
-- **Multi-format Support**: PDFs, CSVs, images, documents
-- **Validation**: File type, size, content safety
-- **Processing**: Automatic chunking and embedding
-- **Collection Management**: AI-driven document categorization
-
-**Search Service**
-- **Semantic Search**: Vector similarity search
-- **Hybrid Search**: Combine vector and keyword search
-- **Filtering**: Metadata-based filtering
-- **Reranking**: Multi-stage result ranking
-
-**Ask Service (Unified Endpoint)**
-- **CSV Processing**: SQL query generation and execution
-- **Document Search**: Semantic document retrieval
-- **AI Integration**: Gemini AI for intelligent responses
-- **Source Combination**: Intelligent merging of multiple data sources
-
-**Cluster Management**
-- **Health Monitoring**: Node health checks
-- **Auto-scaling**: Dynamic node management
-- **Load Balancing**: Request distribution
-- **Configuration**: Cluster configuration management
-
-#### Coordinator Architecture:
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    FastAPI Coordinator                          │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Upload    │ │   Search    │ │     Ask     │ │  Cluster    │ │
-│  │   Service   │ │   Service   │ │   Service   │ │ Management  │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Request Processing                           │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │   Request   │ │   Response  │ │   Error     │ │   Rate      │ │
-│  │  Validation │ │  Formatting │ │  Handling   │ │  Limiting   │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-├─────────────────────────────────────────────────────────────────┤
-│                    Authentication & Authorization               │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │     JWT     │ │   Role-     │ │   API Key   │ │   Audit     │ │
-│  │     Auth    │ │   Based     │ │  Management │ │   Logging   │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-```
-
 ### 2. Core Layer
 
 The core layer contains the business logic, data models, and processing services.
