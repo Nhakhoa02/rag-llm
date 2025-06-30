@@ -23,7 +23,9 @@ class DataValidator:
         # Supported file types and their MIME types
         self.supported_types = {
             'pdf': ['application/pdf'],
-            'docx': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+            'docx': ['application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/zip'
+            ],
             'txt': ['text/plain'],
             'csv': ['text/csv', 'application/csv'],
             'json': ['application/json'],

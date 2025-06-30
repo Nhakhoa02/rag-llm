@@ -176,7 +176,7 @@ class QdrantClient(LoggerMixin):
     async def search_vectors(self, collection_name: str,
                            query_vector: List[float],
                            limit: int = 10,
-                           score_threshold: float = 0.7,
+                           score_threshold: float = 0.0,
                            filter_conditions: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
         Search for similar vectors in collection.

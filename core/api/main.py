@@ -151,7 +151,7 @@ class SearchRequest(BaseModel):
     query: str
     index_names: List[str] = []
     limit: int = 10
-    score_threshold: float = 0.7
+    score_threshold: float = 0.0
     search_strategy: str = "hybrid"
 
 class SearchResult(BaseModel):
@@ -171,7 +171,7 @@ class AskRequest(BaseModel):
     question: str
     index_names: List[str] = []
     limit: int = 10
-    score_threshold: float = 0.5
+    score_threshold: float = 0.0
     search_strategy: str = "hybrid"
     include_sources: bool = True
 
@@ -185,7 +185,7 @@ class AskResponse(BaseModel):
 class AskCSVRequest(BaseModel):
     question: str
     limit: int = 10
-    score_threshold: float = 0.5
+    score_threshold: float = 0.0
     include_sources: bool = True
 
 class AskCSVResponse(BaseModel):

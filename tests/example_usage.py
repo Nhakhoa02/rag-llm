@@ -224,7 +224,7 @@ Charlie Wilson,32,Seattle,DevOps Engineer
                     collection_name=index_name,
                     query_vector=query_embedding[0],
                     limit=5,
-                    score_threshold=0.5
+                    score_threshold=0.0
                 )
                 search_tasks.append((index_name, task))
         
