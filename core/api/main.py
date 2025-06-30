@@ -17,6 +17,7 @@ import requests
 import json
 from typing import cast
 import time
+import threading
 
 from config.config import settings
 from core.utils.logging import get_logger
@@ -1201,6 +1202,14 @@ async def startup_event():
                 pass
     except Exception as e:
         logger.warning("Failed to initialize default collections", error=str(e))
+    
+    # Auto-start autoscaling
+    def start_autoscaling():
+        try:
+            requests.post("http://localhost:8000/autoscaling/start", timeout=5)
+        except Exception as e:
+            logger.error(f"Failed to auto-start autoscaling: {e}")
+    threading.Thread(target=start_autoscaling, daemon=True).start()
 
 async def start_initial_nodes():
     """Start the initial 3 nodes automatically."""
@@ -1508,9 +1517,18 @@ async def remove_node(node_id: str):
     Remove a node from the distributed cluster.
     """
     try:
-        # In a real implementation, this would remove the node from the distributed system
         logger.info(f"Removing node {node_id}")
-        
+        # Remove from distributed storage manager (and thus from all registries and health checks)
+        success = await storage_manager.remove_node(node_id)
+        if not success:
+            raise Exception(f"Failed to remove node {node_id} from distributed system")
+        # Optionally, stop the node process if managed here
+        process = node_processes.get(node_id)
+        if process:
+            process.terminate()
+            process.wait(timeout=5)
+            logger.info(f"Stopped node process: {node_id}")
+            del node_processes[node_id]
         return {
             "status": "success",
             "message": f"Node {node_id} removed successfully"

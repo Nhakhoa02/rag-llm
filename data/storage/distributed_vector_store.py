@@ -151,7 +151,12 @@ class DistributedVectorStore:
                                 logger.info(f"Re-replicated shard {shard_id} to {candidate.id}")
                                 break
             node = self.nodes.pop(node_id)
-            logger.info(f"Removed node {node_id}")
+            logger.info(f"Removed node {node_id}. Remaining nodes: {list(self.nodes.keys())}")
+            # Double-check node is not present
+            if node_id in self.nodes:
+                logger.warning(f"Node {node_id} still present in self.nodes after removal!")
+            else:
+                logger.info(f"Node {node_id} successfully removed from self.nodes.")
             asyncio.create_task(self._redistribute_shards())
     
     async def _health_monitor_loop(self):
