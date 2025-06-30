@@ -3,6 +3,10 @@ Main FastAPI application for the distributed indexing system.
 """
 
 import asyncio
+import subprocess
+import sys
+import os
+from pathlib import Path as PathLib
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, Query, Path
 from fastapi.middleware.cors import CORSMiddleware
@@ -37,6 +41,9 @@ image_processor = ImageProcessor()
 tabular_processor = TabularProcessor()
 text_chunker = TextChunker()
 gemini_client = GeminiClient()
+
+# Global variable to track node processes
+node_processes: Dict[str, subprocess.Popen] = {}
 
 # Initialize distributed storage manager
 storage_manager = create_distributed_storage_manager(
@@ -1179,6 +1186,9 @@ async def startup_event():
     """Initialize system on startup."""
     logger.info("Starting distributed indexing system")
     
+    # Auto-start 3 nodes
+    await start_initial_nodes()
+    
     # Initialize default collections
     try:
         default_collections = ["index_document", "index_image", "index_tabular"]
@@ -1192,11 +1202,133 @@ async def startup_event():
     except Exception as e:
         logger.warning("Failed to initialize default collections", error=str(e))
 
+async def start_initial_nodes():
+    """Start the initial 3 nodes automatically."""
+    logger.info("Starting initial 3 nodes...")
+    
+    # Node configurations
+    initial_nodes = [
+        {"id": "node1", "host": "localhost", "port": 8001},
+        {"id": "node2", "host": "localhost", "port": 8002},
+        {"id": "node3", "host": "localhost", "port": 8003},
+    ]
+    
+    # Get the path to the dynamic node starter script
+    script_path = PathLib(__file__).parent.parent.parent / "scripts" / "start_dynamic_node.py"
+    
+    if not script_path.exists():
+        logger.error(f"Dynamic node starter not found at {script_path}")
+        return
+    
+    # Start each node
+    for node_config in initial_nodes:
+        node_id = node_config["id"]
+        host = node_config["host"]
+        port = node_config["port"]
+        data_dir = f"./node_data/{node_id}"
+        
+        try:
+            logger.info(f"Starting {node_id} on {host}:{port}")
+            
+            # Create data directory
+            PathLib(data_dir).mkdir(parents=True, exist_ok=True)
+            
+            # Start the node server process
+            process = subprocess.Popen([
+                sys.executable, str(script_path), node_id, host, str(port), data_dir
+            ], stdout=None, stderr=None)
+            
+            # Store the process for later management
+            node_processes[node_id] = process
+            
+            logger.info(f"Started {node_id} (PID: {process.pid})")
+            
+            # Wait briefly to see if process exits immediately
+            await asyncio.sleep(2)
+            if process.poll() is not None:
+                logger.error(f"Node {node_id} failed to start (exit code {process.returncode})")
+            else:
+                # Process is still running, let's check if it's responding
+                try:
+                    import requests
+                    response = requests.get(f"http://{host}:{port}/health", timeout=3)
+                    if response.status_code == 200:
+                        logger.info(f"✅ {node_id} is responding to health checks")
+                    else:
+                        logger.warning(f"⚠️ {node_id} is running but health check returned {response.status_code}")
+                except Exception as health_error:
+                    logger.warning(f"⚠️ {node_id} is running but not responding to health checks: {health_error}")
+        except Exception as e:
+            logger.error(f"Failed to start {node_id}: {e}")
+    
+    # Wait for nodes to start up
+    logger.info("Waiting for nodes to start up...")
+    await asyncio.sleep(5)
+    
+    # Check if nodes are running
+    running_nodes = 0
+    for node_id, process in node_processes.items():
+        if process.poll() is None:
+            running_nodes += 1
+            logger.info(f"✅ {node_id} is running (PID: {process.pid})")
+        else:
+            logger.error(f"❌ {node_id} failed to start")
+    
+    logger.info(f"Started {running_nodes}/3 nodes successfully")
+    
+    # Wait a bit more for health checks
+    await asyncio.sleep(3)
+    
+    # Check cluster status
+    try:
+        cluster_status = await storage_manager.get_cluster_status()
+        healthy_nodes = cluster_status.get("healthy_nodes", 0)
+        total_nodes = cluster_status.get("total_nodes", 0)
+        logger.info(f"Cluster status: {healthy_nodes}/{total_nodes} nodes healthy")
+    except Exception as e:
+        logger.warning(f"Could not get cluster status: {e}")
+
 # Shutdown event
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown."""
     logger.info("Shutting down distributed indexing system")
+    
+    # Stop auto-scaling if running
+    try:
+        await auto_scaler.stop_monitoring()
+        logger.info("Stopped auto-scaling")
+    except Exception as e:
+        logger.warning(f"Error stopping auto-scaling: {e}")
+    
+    # Stop all node processes
+    await stop_all_nodes()
+
+async def stop_all_nodes():
+    """Stop all running node processes."""
+    logger.info("Stopping all node processes...")
+    
+    for node_id, process in node_processes.items():
+        try:
+            logger.info(f"Stopping {node_id} (PID: {process.pid})")
+            process.terminate()
+            
+            # Wait for graceful shutdown
+            try:
+                process.wait(timeout=5)
+                logger.info(f"✅ {node_id} stopped gracefully")
+            except subprocess.TimeoutExpired:
+                logger.warning(f"Force killing {node_id}")
+                process.kill()
+                process.wait()
+                logger.info(f"✅ {node_id} force killed")
+                
+        except Exception as e:
+            logger.error(f"Error stopping {node_id}: {e}")
+    
+    # Clear the node processes dictionary
+    node_processes.clear()
+    logger.info("All node processes stopped")
 
 @app.get("/documents")
 async def list_documents(
@@ -1401,14 +1533,32 @@ async def cluster_health_check():
             {"id": "node3", "host": "localhost", "port": 8003}
         ]
         
+        # Check node processes
+        node_process_status = {}
+        for node_id, process in node_processes.items():
+            if process.poll() is None:
+                node_process_status[node_id] = {
+                    "status": "running",
+                    "pid": process.pid
+                }
+            else:
+                node_process_status[node_id] = {
+                    "status": "stopped",
+                    "exit_code": process.poll()
+                }
+        
         for node in nodes:
             try:
                 response = requests.get(f"http://{node['host']}:{node['port']}/health", timeout=5)
                 if response.status_code == 200:
+                    data = response.json()
                     node_health.append({
                         "node_id": node["id"],
                         "status": "healthy",
-                        "response_time": response.elapsed.total_seconds()
+                        "response_time": response.elapsed.total_seconds(),
+                        "uptime": data.get("uptime", 0),
+                        "load": data.get("load", 0.0),
+                        "vector_count": data.get("vector_count", 0)
                     })
                 else:
                     node_health.append({
@@ -1425,17 +1575,33 @@ async def cluster_health_check():
         
         healthy_nodes = sum(1 for node in node_health if node["status"] == "healthy")
         total_nodes = len(node_health)
+        running_processes = sum(1 for status in node_process_status.values() if status["status"] == "running")
+        
+        # Calculate overall status
+        if healthy_nodes >= total_nodes * 0.7:
+            overall_status = "healthy"
+        elif healthy_nodes >= total_nodes * 0.5:
+            overall_status = "degraded"
+        else:
+            overall_status = "unhealthy"
         
         return {
-            "cluster_status": "healthy" if healthy_nodes >= total_nodes * 0.5 else "degraded",
+            "cluster_status": overall_status,
             "healthy_nodes": healthy_nodes,
             "total_nodes": total_nodes,
+            "running_processes": running_processes,
             "node_health": node_health,
+            "node_processes": node_process_status,
+            "auto_scaling": {
+                "is_running": auto_scaler.is_running,
+                "running_processes": len(auto_scaler.node_processes)
+            },
             "features": {
                 "fault_tolerance": "enabled",
                 "load_balancing": "enabled",
                 "data_replication": "enabled",
-                "consistency": "quorum"
+                "consistency": "quorum",
+                "auto_startup": "enabled"
             }
         }
     except Exception as e:
@@ -1835,6 +2001,34 @@ async def debug_csv_databases():
     except Exception as e:
         logger.error(f"Failed to debug CSV databases: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to debug CSV databases: {str(e)}")
+
+async def monitor_node_output(node_id: str, process: subprocess.Popen):
+    """Monitor the output of a node subprocess in real-time."""
+    try:
+        while process.poll() is None:
+            # Read stdout
+            if process.stdout:
+                line = process.stdout.readline()
+                if line:
+                    logger.info(f"[{node_id}] {line.strip()}")
+            
+            # Read stderr
+            if process.stderr:
+                line = process.stderr.readline()
+                if line:
+                    logger.error(f"[{node_id}] ERROR: {line.strip()}")
+            
+            await asyncio.sleep(0.1)
+        
+        # Process has exited, read remaining output
+        out, err = process.communicate()
+        if out:
+            logger.info(f"[{node_id}] Final stdout: {out}")
+        if err:
+            logger.error(f"[{node_id}] Final stderr: {err}")
+            
+    except Exception as e:
+        logger.error(f"Error monitoring {node_id} output: {e}")
 
 if __name__ == "__main__":
     import uvicorn

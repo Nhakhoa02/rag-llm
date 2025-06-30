@@ -163,6 +163,7 @@ PyMuPDF==1.23.8
 
 # Utilities
 tenacity==8.2.3
+psutil>=5.9.0
 
 # New additions
 open-clip-torch

@@ -293,6 +293,23 @@ class VectorNodeServer:
                 "request_count": self.request_count,
                 "last_request_time": self.last_request_time
             }
+        
+        @self.app.get("/export_shard/{shard_id}")
+        async def export_shard(shard_id: str):
+            """Export all vectors for a shard."""
+            vectors = [asdict(self.vectors[vid]) for vid in self.shards.get(shard_id, []) if vid in self.vectors]
+            return {"vectors": vectors}
+        
+        @self.app.delete("/shards/{shard_id}")
+        async def delete_shard(shard_id: str):
+            """Delete all vectors for a shard."""
+            if shard_id in self.shards:
+                for vid in list(self.shards[shard_id]):
+                    if vid in self.vectors:
+                        del self.vectors[vid]
+                del self.shards[shard_id]
+                return {"status": "deleted"}
+            return {"status": "not_found"}
     
     def _calculate_load(self) -> float:
         """Calculate current load (0.0 to 1.0)."""

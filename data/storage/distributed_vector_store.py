@@ -69,7 +69,7 @@ class VectorNode:
             "last_heartbeat": self.last_heartbeat,
             "load": self.load,
             "vector_count": self.vector_count,
-            "collections": list(self.collections)
+            "collections": list(self.collections or set())
         }
 
 @dataclass
@@ -133,13 +133,25 @@ class DistributedVectorStore:
         # Redistribute shards if needed
         asyncio.create_task(self._redistribute_shards())
     
-    def remove_node(self, node_id: str):
-        """Remove a node from the cluster."""
+    async def remove_node(self, node_id: str):
+        """Remove a node from the cluster and re-replicate its shards."""
         if node_id in self.nodes:
+            logger.info(f"Removing node {node_id} and re-replicating its shards")
+            healthy_nodes = [n for n in self.nodes.values() if n.status == NodeStatus.HEALTHY and n.id != node_id]
+            for shard_id, shard in self.shards.items():
+                if node_id in shard.node_ids:
+                    shard.node_ids = [nid for nid in shard.node_ids if nid != node_id]
+                    if len(shard.node_ids) < self.replication_factor:
+                        for candidate in healthy_nodes:
+                            if candidate.id not in shard.node_ids:
+                                source_node = self.nodes[shard.node_ids[0]]
+                                vectors = await self._export_shard_from_node(source_node, shard_id)
+                                await self._import_shard_to_node(candidate, shard_id, vectors)
+                                shard.node_ids.append(candidate.id)
+                                logger.info(f"Re-replicated shard {shard_id} to {candidate.id}")
+                                break
             node = self.nodes.pop(node_id)
             logger.info(f"Removed node {node_id}")
-            
-            # Redistribute shards from removed node
             asyncio.create_task(self._redistribute_shards())
     
     async def _health_monitor_loop(self):
@@ -201,9 +213,57 @@ class DistributedVectorStore:
             await self._move_shards_between_nodes(high_load_nodes, low_load_nodes)
     
     async def _move_shards_between_nodes(self, source_nodes: List[VectorNode], target_nodes: List[VectorNode]):
-        """Move shards between nodes for load balancing."""
-        # Implementation would involve copying shard data and updating metadata
-        logger.info(f"Load balancing: moving shards from {len(source_nodes)} to {len(target_nodes)} nodes")
+        """Move shards from high-load to low-load nodes."""
+        for source in source_nodes:
+            for shard_id, shard in self.shards.items():
+                if source.id in shard.node_ids:
+                    for target in target_nodes:
+                        if target.id not in shard.node_ids:
+                            logger.info(f"Moving shard {shard_id} from {source.id} to {target.id}")
+                            vectors = await self._export_shard_from_node(source, shard_id)
+                            if not vectors:
+                                logger.warning(f"No vectors found in shard {shard_id} on {source.id}")
+                                continue
+                            await self._import_shard_to_node(target, shard_id, vectors)
+                            shard.node_ids.append(target.id)
+                            # Optionally remove source.id from node_ids if you want to move (not replicate)
+                            # shard.node_ids.remove(source.id)
+                            # Optionally delete from source
+                            # await self._delete_shard_from_node(source, shard_id)
+                            logger.info(f"Shard {shard_id} now on nodes: {shard.node_ids}")
+                            return  # Move one shard per cycle for simplicity
+
+    async def _export_shard_from_node(self, node: VectorNode, shard_id: str):
+        url = f"{node.url}/export_shard/{shard_id}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=30) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    return data.get("vectors", [])
+                else:
+                    logger.warning(f"Failed to export shard {shard_id} from {node.id}: {resp.status}")
+                    return []
+
+    async def _import_shard_to_node(self, node: VectorNode, shard_id: str, vectors: list):
+        url = f"{node.url}/vectors"
+        payload = {
+            "shard_id": shard_id,
+            "collection_name": vectors[0]["collection_name"] if vectors else "default",
+            "vectors": [v["vector"] for v in vectors],
+            "documents": [v["document"] for v in vectors],
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload, timeout=30) as resp:
+                if resp.status == 200:
+                    logger.info(f"Imported {len(vectors)} vectors to {node.id} for shard {shard_id}")
+                else:
+                    logger.warning(f"Failed to import vectors to {node.id} for shard {shard_id}: {resp.status}")
+
+    async def _delete_shard_from_node(self, node: VectorNode, shard_id: str):
+        url = f"{node.url}/shards/{shard_id}"
+        async with aiohttp.ClientSession() as session:
+            async with session.delete(url, timeout=10) as resp:
+                return resp.status == 200
     
     def _get_shard_id(self, collection_name: str, document_id: str) -> str:
         """Get shard ID for a document using consistent hashing."""
@@ -332,74 +392,45 @@ class DistributedVectorStore:
             return False
     
     async def upsert_vectors(self, collection_name: str, vectors: List[List[float]], documents: List[BaseDocument]) -> bool:
-        """Upsert vectors to the distributed system."""
+        """Upsert vectors to the distributed system with quorum-based consistency."""
         try:
             # Group documents by shard
             shard_groups = defaultdict(lambda: {"vectors": [], "documents": []})
-            
             for i, doc in enumerate(documents):
                 shard_id = self._get_shard_id(collection_name, doc.id)
                 shard_groups[shard_id]["vectors"].append(vectors[i])
                 shard_groups[shard_id]["documents"].append(doc)
-            
-            # Upsert to each shard
-            tasks = []
+            # Upsert to each shard with quorum
             for shard_id, group in shard_groups.items():
-                if group["vectors"]:
-                    tasks.append(self._upsert_to_shard(shard_id, group["vectors"], group["documents"]))
-            
-            results = await asyncio.gather(*tasks, return_exceptions=True)
-            success_count = sum(1 for r in results if r is True)
-            
-            logger.info(f"Upserted vectors to {success_count}/{len(tasks)} shards")
-            return success_count > 0
-            
+                node_ids = self.shards[shard_id].node_ids
+                quorum = (len(node_ids) // 2) + 1  # Majority
+                ack_count = 0
+                tasks = []
+                for node_id in node_ids:
+                    node = self.nodes[node_id]
+                    tasks.append(self._upsert_to_node(node, shard_id, group["vectors"], group["documents"], collection_name))
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+                for res in results:
+                    if res is True:
+                        ack_count += 1
+                if ack_count < quorum:
+                    logger.error(f"Write to shard {shard_id} failed to reach quorum ({ack_count}/{quorum})")
+                    return False
+                # Only increment once per successful quorum upsert
+                self.shards[shard_id].vector_count += len(group["vectors"])
+            logger.info(f"Upserted vectors to all shards with quorum consistency")
+            return True
         except Exception as e:
             logger.error(f"Failed to upsert vectors: {e}")
             return False
     
-    async def _upsert_to_shard(self, shard_id: str, vectors: List[List[float]], documents: List[BaseDocument]) -> bool:
-        """Upsert vectors to a specific shard."""
-        if shard_id not in self.shards:
-            return False
-        
-        shard = self.shards[shard_id]
-        node_ids = shard.node_ids
-        
-        # Write to primary and replicas based on consistency level
-        required_nodes = self._get_required_nodes_for_consistency(node_ids)
-        
-        tasks = []
-        for node_id in required_nodes:
-            if node_id in self.nodes:
-                node = self.nodes[node_id]
-                tasks.append(self._upsert_to_node(node, shard_id, vectors, documents))
-        
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        success_count = sum(1 for r in results if r is True)
-        
-        # Update shard metadata
-        if success_count > 0:
-            shard.vector_count += len(vectors)
-        
-        return success_count >= len(required_nodes) * 0.5  # At least 50% success
-    
-    def _get_required_nodes_for_consistency(self, node_ids: List[str]) -> List[str]:
-        """Get required nodes based on consistency level."""
-        if self.consistency_level == ConsistencyLevel.ONE:
-            return [node_ids[0]]  # Primary only
-        elif self.consistency_level == ConsistencyLevel.QUORUM:
-            return node_ids[:max(1, len(node_ids) // 2 + 1)]  # Majority
-        else:  # ALL
-            return node_ids
-    
-    async def _upsert_to_node(self, node: VectorNode, shard_id: str, vectors: List[List[float]], documents: List[BaseDocument]) -> bool:
+    async def _upsert_to_node(self, node: VectorNode, shard_id: str, vectors: List[List[float]], documents: List[BaseDocument], collection_name: str) -> bool:
         """Upsert vectors to a specific node."""
         try:
             async with aiohttp.ClientSession() as session:
                 payload = {
                     "shard_id": shard_id,
-                    "collection_name": shard_id.split('_')[2] if len(shard_id.split('_')) > 2 else "default",  # Extract collection name from shard_id
+                    "collection_name": collection_name,
                     "vectors": vectors,
                     "documents": [doc.to_dict() for doc in documents]
                 }
