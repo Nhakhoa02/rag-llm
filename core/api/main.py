@@ -635,69 +635,68 @@ async def ask_question(request: AskRequest):
                             logger.warning(f"Error processing CSV search result: {e}")
                             continue
                     
-                    # Try to generate and execute SQL queries for the most relevant CSV
-                    sql_results = []
+                    # Try to generate and execute SQL queries for ALL relevant CSVs
+                    all_sql_results = []
+                    sql_prompt_template = """
+                    Generate a SQL query to answer this question: "{question}"
                     
-                    if relevant_csvs:
-                        # Get the most relevant CSV
-                        best_csv = relevant_csvs[0]
-                        # Extract the csv_file_id from metadata, not the document_id
-                        csv_file_id = best_csv.get("csv_file_id", best_csv["document_id"])
-                        
-                        # Generate SQL query using AI
-                        sql_prompt = f"""
-                        Generate a SQL query to answer this question: "{request.question}"
-                        
-                        CSV Structure:
-                        - File: {best_csv['filename']}
-                        - Columns: {', '.join(best_csv['column_headers'])}
-                        - Total Rows: {best_csv['total_rows']}
-                        - Table Name: csv_data_{csv_file_id.replace('-', '_')}
-                        
-                        Instructions:
-                        - Return ONLY the SQL query, nothing else
-                        - Use the exact table name: csv_data_{csv_file_id.replace('-', '_')}
-                        - Focus on getting actual data values, not just structure
-                        - If the question asks for specific values, use WHERE clauses to find them
-                        - If the question asks for calculations, use appropriate SQL functions
-                        """
-                        
+                    CSV Structure:
+                    - File: {filename}
+                    - Columns: {columns}
+                    - Total Rows: {total_rows}
+                    - Table Name: csv_data_{table_name}
+                    
+                    Instructions:
+                    - Return ONLY the SQL query, nothing else
+                    - Use the exact table name: csv_data_{table_name}
+                    - Focus on getting actual data values, not just structure
+                    - If the question asks for specific values, use WHERE clauses to find them
+                    - If the question asks for calculations, use appropriate SQL functions
+                    """
+                    for csv in relevant_csvs:
+                        csv_file_id = csv.get("csv_file_id", csv["document_id"])
+                        table_name = csv_file_id.replace('-', '_')
+                        sql_prompt = sql_prompt_template.format(
+                            question=request.question,
+                            filename=csv['filename'],
+                            columns=", ".join(csv['column_headers']),
+                            total_rows=csv['total_rows'],
+                            table_name=table_name
+                        )
                         try:
                             sql_response = await gemini_client.generate_text(sql_prompt, temperature=0.1)
                             sql_query = extract_gemini_text(sql_response).strip()
-                            
-                            # Clean up SQL query (remove markdown, etc.)
                             if sql_query.startswith('```sql'):
                                 sql_query = sql_query[7:]
                             if sql_query.endswith('```'):
                                 sql_query = sql_query[:-3]
                             sql_query = sql_query.strip()
-                            
-                            # Execute the SQL query
                             if sql_query and sql_query.upper().startswith('SELECT'):
                                 try:
                                     results, columns = csv_db_manager.execute_query(csv_file_id, sql_query)
-                                    sql_results = {
-                                        "csv_file": best_csv['filename'],
+                                    all_sql_results.append({
+                                        "csv_file": csv['filename'],
                                         "sql_query": sql_query,
-                                        "results": results[:10],  # Limit to first 10 results
+                                        "results": results[:10],
                                         "total_results": len(results),
                                         "columns": columns
-                                    }
-                                    logger.info(f"Executed SQL query: {sql_query}")
-                                    
+                                    })
                                 except Exception as sql_error:
-                                    logger.warning(f"SQL execution failed: {sql_error}")
-                                    sql_results = {"error": str(sql_error)}
-                            
+                                    all_sql_results.append({
+                                        "csv_file": csv['filename'],
+                                        "sql_query": sql_query,
+                                        "error": str(sql_error)
+                                    })
                         except Exception as sql_gen_error:
-                            logger.warning(f"SQL generation failed: {sql_gen_error}")
-                    
+                            all_sql_results.append({
+                                "csv_file": csv['filename'],
+                                "sql_query": None,
+                                "error": f"SQL generation failed: {sql_gen_error}"
+                            })
                     # Calculate confidence based on search scores
                     if relevant_csvs:
                         avg_score = sum(csv["score"] for csv in relevant_csvs) / len(relevant_csvs)
                         csv_confidence = min(avg_score * 1.2, 1.0)  # Boost confidence slightly
-                    
                     # Create CSV sources for response
                     csv_sources = [
                         SearchResult(
@@ -709,23 +708,21 @@ async def ask_question(request: AskRequest):
                         )
                         for csv in relevant_csvs
                     ]
-                    
                     # Prepare CSV data information for the LLM
+                    csv_results_section = "\n".join([
+                        f"- {r['csv_file']}: SQL Query: {r['sql_query']} Result: {r.get('results', r.get('error', 'No result'))}"
+                        for r in all_sql_results
+                    ])
                     csv_data_info = f"""
-                    CSV Data Available:
-                    {chr(10).join([f"- {csv['filename']}: {csv['total_rows']} rows, {csv['total_columns']} columns ({', '.join(csv['column_headers'])})" for csv in relevant_csvs])}
-                    
-                    SQL Query Results:
-                    {json.dumps(sql_results, indent=2) if sql_results else "No SQL results available"}
+                    For each relevant CSV file, you have executed the following SQL queries and obtained these results:\n\n{csv_results_section}
                     """
-                    
                     csv_reasoning = {
                         "csv_files_analyzed": len(csv_indexes),
                         "search_scores": [csv["score"] for csv in relevant_csvs],
                         "analysis_method": "csv_index_search",
-                        "sql_results": sql_results
+                        "sql_results": all_sql_results
                     }
-                        
+                    
             except Exception as csv_error:
                 logger.warning(f"CSV processing failed: {csv_error}")
         
@@ -767,32 +764,34 @@ async def ask_question(request: AskRequest):
         
         # Step 4: Generate comprehensive answer using LLM with all information
         final_prompt = f"""
-        You are an AI assistant with access to multiple sources of information. Please answer the user's question comprehensively.
+        You are a data analyst with access to multiple CSV files and other documents. The user has asked: \"{request.question}\"
 
-        Question: "{request.question}"
-
-        Available Information:
-
-        {f"CSV Data:{csv_data_info}" if csv_data_info else "No CSV data available"}
+        {f"CSV Data:\n{csv_data_info}" if csv_data_info else "No CSV data available"}
 
         {f"Document Sources:{chr(10)}{document_sources_text}" if document_sources_text else "No document sources available"}
 
         Instructions:
-        1. Provide a comprehensive answer that uses all available information
-        2. If CSV data is available and relevant, use the actual data values from the SQL results
-        3. If document sources provide relevant information, incorporate that as well
-        4. If there are conflicts between sources, acknowledge them
-        5. If one source is more specific or relevant, emphasize that
-        6. Be direct and comprehensive in your answer
-        7. If the sources don't fully answer the question, acknowledge this
+        1. Carefully review the results from each CSV file.
+        2. If the answer (e.g., phone number) is the same in all files, state that all sources agree and provide the answer.
+        3. If there are differences between the files, clearly list each answer and specify which CSV file it came from.
+        4. Do not make up or infer values not present in the results.
+        5. If the answer cannot be found in any file, state that explicitly.
+        6. If document sources provide relevant information, incorporate that as well.
+        7. If there are conflicts between sources, acknowledge them.
+        8. If one source is more specific or relevant, emphasize that.
+        9. Be direct and comprehensive in your answer.
+        10. If the sources don't fully answer the question, acknowledge this.
 
         Format your response as JSON:
         {{
-            "answer": "Your comprehensive answer here",
-            "confidence": 0.85,
-            "reasoning": "Explanation of how you arrived at this answer",
-            "limitations": ["Any limitations or uncertainties"],
-            "sources_used": ["csv", "documents"] or ["csv"] or ["documents"]
+          "answer": "Your answer here, clearly referencing each CSV file and its result.",
+          "details": [
+            {{"csv_file": "csv1.csv", "result": "value or 'not found'"}},
+            {{"csv_file": "csv2.csv", "result": "value or 'not found'"}}
+          ],
+          "reasoning": "Explain how you compared the results and why you gave this answer.",
+          "limitations": ["Any limitations or uncertainties"],
+          "sources_used": ["csv", "documents"] or ["csv"] or ["documents"]
         }}
         """
         
@@ -1545,11 +1544,9 @@ async def cluster_health_check():
     try:
         # Check individual node health
         node_health = []
-        nodes = [
-            {"id": "node1", "host": "localhost", "port": 8001},
-            {"id": "node2", "host": "localhost", "port": 8002},
-            {"id": "node3", "host": "localhost", "port": 8003}
-        ]
+        # Get dynamic node list from cluster status
+        cluster_status = await storage_manager.get_cluster_status()
+        nodes = cluster_status.get("nodes", [])
         
         # Check node processes
         node_process_status = {}
