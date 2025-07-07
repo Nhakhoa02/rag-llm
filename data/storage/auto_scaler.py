@@ -94,21 +94,20 @@ class AutoScaler:
             cluster_status = await self.storage_manager.get_cluster_status()
             node_count = cluster_status.get("total_nodes", 0)
             healthy_nodes = cluster_status.get("healthy_nodes", 0)
-            
+            logger.info(f"[AutoScaler] Monitoring cycle: node_count={node_count}, healthy_nodes={healthy_nodes}, min_nodes={self.thresholds.min_nodes}, max_nodes={self.thresholds.max_nodes}")
             # Simple scaling logic
             current_time = time.time()
-            
             # Scale up if healthy nodes are low
             if (healthy_nodes < self.thresholds.min_nodes and 
                 node_count < self.thresholds.max_nodes and
                 current_time - self.last_scale_up > self.thresholds.scale_up_cooldown):
+                logger.info(f"[AutoScaler] Triggering scale up: healthy_nodes={healthy_nodes} < min_nodes={self.thresholds.min_nodes}")
                 await self._scale_up("Low healthy nodes", node_count)
-            
             # Scale down if we have excess nodes
             elif (node_count > self.thresholds.min_nodes and
                   current_time - self.last_scale_down > self.thresholds.scale_down_cooldown):
+                logger.info(f"[AutoScaler] Triggering scale down: node_count={node_count} > min_nodes={self.thresholds.min_nodes}")
                 await self._scale_down("Excess capacity", node_count)
-                
         except Exception as e:
             logger.error(f"Monitoring cycle error: {e}")
     
